@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Abo Shaheen</title>
+    <meta name="description" content="Abo Shaheen - مطور واجهات أمامية للمواقع الإلكترونية ومتخصص في تحويل الأفكار إلى مواقع ويب احترافية.">
+    <meta name="theme-color" content="#000633">
+    <link rel="icon" type="image/png" href="img/logo.png">
+
+    <!-- الخطوط: طلب واحد بدل اثنين -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Playwrite+DK+Loopet:wght@100..400&family=Rubik:wght@300..900&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="preload" as="image" href="img/me2.webp" type="image/webp" fetchpriority="high">
+    <meta name="google-site-verification" content="xKBT0gnSLtL0bO-T1gaUt4bEsfAjgGyQVC8DDWfoX4Y" />
+</head>
+
+<body>
+    <!-- ===== خلفية الفضاء: سُدم + غبار نجوم + مجرة درب التبانة (يمين) (بيرسمهم script.js) ===== -->
+    <div class="cosmos" aria-hidden="true">
+        <div class="cosmos__nebulae"></div>
+        <canvas class="cosmos__dust"></canvas>
+        <div class="cosmos__body cosmos__body--galaxy"><div class="cosmos__tilt"><canvas class="cosmos__canvas"></canvas></div></div>
+    </div>
+
+    <!-- ===== النجوم (بيولّدها script.js) ===== -->
+    <div class="stars" aria-hidden="true"></div>
+
+    <!-- ===== الهيدر ===== -->
+    <header class="site-header">
+        <button class="site-header__button site-header__button--home" type="button" data-nav="home"><i class="site-header__icon fa-solid fa-house" aria-hidden="true"></i><span class="site-header__label">الرئيسية</span></button>
+        <button class="site-header__button site-header__button--store" type="button" data-nav="store"><i class="site-header__icon fa-solid fa-store" aria-hidden="true"></i><span class="site-header__label">المتجر</span></button>
+        <button class="site-header__button site-header__button--platform" type="button" data-nav="platform"><i class="site-header__icon fa-solid fa-layer-group" aria-hidden="true"></i><span class="site-header__label">المنصة</span></button>
+        <button class="site-header__button site-header__button--contact" type="button" data-nav="contact"><i class="site-header__icon fa-solid fa-envelope" aria-hidden="true"></i><span class="site-header__label">تواصل معي</span></button>
+    </header>
+
+    <main class="site-main">
+        <!-- ===== التعريف (الصورة + الاسم + الوصف) ===== -->
+        <section class="hero">
+            <h1 class="hero__title">Abo Shaheen</h1>
+
+            <p class="hero__subtitle">
+                مطور واجهات امامية للمواقع الإلكترونية
+                <br>
+                ومتخصص في تحويل الأفكار إلى مواقع ويب احترافيه
+            </p>
+
+            <div class="hero__portrait">
+                <!-- أيقونات التقنيات: تخرج من الشخص وتطفو حوله (مواضعها وألوانها في style.css) -->
+                <ul class="tech-icons">
+                    <li class="tech-icon tech-icon--react">
+                        <span class="tech-icon__entrance">
+                            <span class="tech-icon__floating"><img class="tech-icon__image" src="img/icons/react.svg" alt="react" width="58" height="58" decoding="async"></span>
+                        </span>
+                    </li>
+                    <li class="tech-icon tech-icon--nodejs">
+                        <span class="tech-icon__entrance">
+                            <span class="tech-icon__floating"><img class="tech-icon__image" src="img/icons/nodejs.svg" alt="nodejs" width="46" height="46" decoding="async"></span>
+                        </span>
+                    </li>
+                    <li class="tech-icon tech-icon--git">
+                        <span class="tech-icon__entrance">
+                            <span class="tech-icon__floating"><img class="tech-icon__image" src="img/icons/git.svg" alt="git" width="46" height="46" decoding="async"></span>
+                        </span>
+                    </li>
+                    <li class="tech-icon tech-icon--html">
+                        <span class="tech-icon__entrance">
+                            <span class="tech-icon__floating"><img class="tech-icon__image" src="img/icons/html5.svg" alt="html5" width="56" height="56" decoding="async"></span>
+                        </span>
+                    </li>
+                    <li class="tech-icon tech-icon--javascript">
+                        <span class="tech-icon__entrance">
+                            <span class="tech-icon__floating"><img class="tech-icon__image tech-icon__image--rounded" src="img/icons/javascript.svg" alt="javascript" width="50" height="50" decoding="async"></span>
+                        </span>
+                    </li>
+                    <li class="tech-icon tech-icon--typescript">
+                        <span class="tech-icon__entrance">
+                            <span class="tech-icon__floating"><img class="tech-icon__image tech-icon__image--rounded" src="img/icons/typescript.svg" alt="typescript" width="50" height="50" decoding="async"></span>
+                        </span>
+                    </li>
+                    <li class="tech-icon tech-icon--python">
+                        <span class="tech-icon__entrance">
+                            <span class="tech-icon__floating"><img class="tech-icon__image" src="img/icons/python.svg" alt="python" width="56" height="56" decoding="async"></span>
+                        </span>
+                    </li>
+                    <li class="tech-icon tech-icon--css">
+                        <span class="tech-icon__entrance">
+                            <span class="tech-icon__floating"><img class="tech-icon__image" src="img/icons/css3.svg" alt="css3" width="54" height="54" decoding="async"></span>
+                        </span>
+                    </li>
+                </ul>
+                <img class="hero__glow" src="img/me2.webp" alt="" aria-hidden="true" width="900" height="1105" decoding="async">
+                <img class="hero__photo" src="img/me2.webp" alt="" width="900" height="1105" fetchpriority="high" decoding="async">
+            </div>
+        </section>
+
+        <!-- سهم صغير يشير للأسفل (بيختفي أول ما المستخدم ينزل) -->
+        <div class="scroll-hint" aria-hidden="true"><span class="scroll-hint__chevrons"><span class="scroll-hint__chevron"></span><span class="scroll-hint__chevron"></span><span class="scroll-hint__chevron"></span></span></div>
+
+        <div class="site-main__content">
+            <!-- ===== المشاريع (سلايدر أفقي: أضف أي <article class="project-card"> جديد جوه .projects-slider__track) ===== -->
+            <section class="section" aria-labelledby="projects-title">
+                <h2 class="section__badge" id="projects-title"><span class="section__badge-label">المشاريع</span></h2>
+                <div class="section__card section__card--projects">
+                    <div class="projects-slider">
+
+                        <!-- منطقة العرض: بتخفي أي مشروع خارج الإطار وتسمح بالتمرير الجانبي -->
+                        <div class="projects-slider__viewport" tabindex="0" role="region" aria-label="قائمة المشاريع">
+                            <div class="projects-slider__track">
+                                <article class="project-card">
+                                    <h3 class="project-card__title">My Portfolio</h3>
+                                    <img class="project-card__image" src="img/projects/Project1.webp" alt="لقطة من موقع Abo Shaheen Portfolio" width="600" height="332" loading="lazy" decoding="async">
+                                    <p class="project-card__description">
+                                        موقعي الشخصى , اعرض عليه اعمالي وملفي التعريفي ,
+                                        <br>
+                                        تم انشاءه باستخدام لغات
+                                        <br>
+                                        (HTML , CSS , JS)
+                                    </p>
+                                </article>
+
+                                <article class="project-card">
+                                    <h3 class="project-card__title">همّه</h3>
+                                    <img class="project-card__image" src="img/projects/Project2.webp" alt="لقطة من مشروع همّه" width="600" height="352" loading="lazy" decoding="async">
+                                    <button class="project-card__button" type="button" data-project="1">زيارة</button>
+                                </article>
+
+                                <article class="project-card">
+                                    <h3 class="project-card__title">الآله الحاسبة</h3>
+                                    <img class="project-card__image" src="img/projects/Project3.webp" alt="لقطة من مشروع الآلة الحاسبة" width="320" height="320" loading="lazy" decoding="async">
+                                    <p class="project-card__description">
+                                        تصميم آله حاسبه تم انشاءه باستخدام لغات (HTML , CSS , JS)
+                                    </p>
+                                    <button class="project-card__button" type="button" data-project="2">زيارة</button>
+                                </article>
+
+                                <article class="project-card">
+                                    <h3 class="project-card__title">لعبة الألغاز</h3>
+                                    <img class="project-card__image" src="img/projects/Project4.webp" alt="لقطة من مشروع لعبة الألغاز" width="600" height="332" loading="lazy" decoding="async">
+                                    <button class="project-card__button" type="button" data-project="3">زيارة</button>
+                                </article>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- زر الرجوع للمشاريع السابقة -->
+                <button class="projects-slider__arrow projects-slider__arrow--previous" type="button" aria-label="المشاريع السابقة"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
+
+                <!-- زر التمرير لباقي المشاريع المخفية -->
+                <button class="projects-slider__arrow projects-slider__arrow--next" type="button" aria-label="المشاريع التالية"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
+            </section>
+
+            <!-- ===== الخدمات + المهارات: جنب بعض بنفس عرض المشاريع ===== -->
+            <div class="sections-row">
+                <!-- ===== الخدمات ===== -->
+                <section class="section section--services" aria-labelledby="services-title">
+                    <h2 class="section__badge" id="services-title"><span class="section__badge-label">الخدمات</span></h2>
+                    <div class="section__card section__card--services">
+                        <div class="cards-grid">
+                            <article class="service-card">
+                                <h3 class="service-card__title">انشاء صفحات هبوط</h3>
+                                <img class="service-card__image" src="img/projects/service1.webp" alt="" width="600" height="600" loading="lazy" decoding="async">
+                                <p class="service-card__description">
+                                    صفحات لبيع منتج -
+                                    جمع بيانات العملاء -
+                                    التسجيل في خدمة -
+                                    تحميل تطبيق -
+                                    التواصل مع صاحب الخدمة , وغيره
+                                </p>
+                            </article>
+
+                            <article class="service-card">
+                                <h3 class="service-card__title">انشاء موقع <bdi>Portfolio</bdi></h3>
+                                <img class="service-card__image" src="img/projects/service2.webp" alt="" width="600" height="600" loading="lazy" decoding="async">
+                                <p class="service-card__description">
+                                    موقع لعرض الأعمال والمشاريع والخدمات والسيره الذاتية والخبرات
+                                </p>
+                            </article>
+
+                            <article class="service-card service-card--extra">
+                                <h3 class="service-card__title">خدمات اخرى</h3>
+                                <ul class="service-card__list">
+                                    <li class="service-card__list-item">تعديل المواقع الجاهزه</li>
+                                    <li class="service-card__list-item">تسريع ظهور الموقع على محرك البحث <bdi>Google</bdi></li>
+                                </ul>
+                                <p class="service-card__note">اذا كان لديك اي استفسار عن خدمات اخرى او اسعار الخدمات تواصل معى</p>
+                            </article>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ===== المهارات ===== -->
+                <section class="section section--skills" aria-labelledby="skills-title">
+                    <h2 class="section__badge" id="skills-title"><span class="section__badge-label">مهاراتي</span></h2>
+                    <div class="section__card section__card--skills">
+                        <div class="skills-panel">
+                            <div class="skills-group">
+                                <h3 class="skills-group__title">Programming Languages</h3>
+                                <ul class="skills-group__list">
+                                    <li class="skills-group__item">HTML</li>
+                                    <li class="skills-group__item">CSS</li>
+                                    <li class="skills-group__item">JavaScript</li>
+                                </ul>
+                            </div>
+                            <div class="skills-group">
+                                <h3 class="skills-group__title">Dev Tools</h3>
+                                <ul class="skills-group__list">
+                                    <li class="skills-group__item">Vscode</li>
+                                    <li class="skills-group__item">GitHub</li>
+                                </ul>
+                            </div>
+                            <div class="skills-group">
+                                <h3 class="skills-group__title">SEO Tools</h3>
+                                <ul class="skills-group__list">
+                                    <li class="skills-group__item">Google Search Console</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- ===== الفوتر ===== -->
+    <footer class="site-footer">
+        <h3 class="site-footer__title">Abo Shaheen</h3>
+        <div class="social-bar">
+            <button class="social-bar__button social-bar__button--youtube" type="button" data-social="youtube"><i class="social-bar__icon fa-brands fa-youtube" aria-hidden="true"></i><span class="social-bar__label">YouTube</span></button>
+            <button class="social-bar__button social-bar__button--tiktok" type="button" data-social="tiktok"><i class="social-bar__icon fa-brands fa-tiktok" aria-hidden="true"></i><span class="social-bar__label">TikTok</span></button>
+            <button class="social-bar__button social-bar__button--instagram" type="button" data-social="instagram"><i class="social-bar__icon fa-brands fa-instagram" aria-hidden="true"></i><span class="social-bar__label">Instagram</span></button>
+            <button class="social-bar__button social-bar__button--github" type="button" data-social="github"><i class="social-bar__icon fa-brands fa-github" aria-hidden="true"></i><span class="social-bar__label">GitHub</span></button>
+            <button class="social-bar__button social-bar__button--linkedin" type="button" data-social="linkedin"><i class="social-bar__icon fa-brands fa-linkedin" aria-hidden="true"></i><span class="social-bar__label">LinkedIn</span></button>
+        </div>
+    </footer>
+
+    <!-- الأزرار العائمة: تبديل الثيم + إيقاف/تشغيل التأثيرات -->
+    <div class="floating-toolbar">
+        <button class="floating-toolbar__button floating-toolbar__button--theme" type="button" aria-label="تفعيل الوضع الداكن" title="تبديل الوضع" data-action="toggle-theme"><i class="fa-solid fa-moon" aria-hidden="true"></i></button>
+        <button class="floating-toolbar__button floating-toolbar__button--effects" type="button" aria-label="إيقاف التأثيرات" aria-pressed="false" title="إيقاف التأثيرات" data-action="toggle-effects"><i class="fa-solid fa-circle-pause" aria-hidden="true"></i></button>
+    </div>
+
+    <script src="script.js" defer></script>
+</body>
+
+</html>

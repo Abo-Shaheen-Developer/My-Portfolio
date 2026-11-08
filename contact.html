@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>تواصل معي | Abo Shaheen</title>
+    <meta name="description" content="تواصل مع Abo Shaheen مطور واجهات أمامية للمواقع الإلكترونية.">
+    <meta name="theme-color" content="#000633">
+    <link rel="icon" type="image/png" href="img/logo.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Playwrite+DK+Loopet:wght@100..400&family=Rubik:wght@300..900&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- ===== خلفية الفضاء: سُدم + غبار نجوم + مجرة درب التبانة (بيرسمهم script.js) ===== -->
+    <div class="cosmos" aria-hidden="true">
+        <div class="cosmos__nebulae"></div>
+        <canvas class="cosmos__dust"></canvas>
+        <div class="cosmos__body cosmos__body--galaxy"><div class="cosmos__tilt"><canvas class="cosmos__canvas"></canvas></div></div>
+    </div>
+
+    <!-- ===== النجوم (بيولّدها script.js) ===== -->
+    <div class="stars" aria-hidden="true"></div>
+
+    <!-- ===== الهيدر (نفس هيدر الرئيسية) ===== -->
+    <header class="site-header">
+        <button class="site-header__button site-header__button--home" type="button" data-nav="home"><i class="site-header__icon fa-solid fa-house" aria-hidden="true"></i><span class="site-header__label">الرئيسية</span></button>
+        <button class="site-header__button site-header__button--store" type="button" data-nav="store"><i class="site-header__icon fa-solid fa-store" aria-hidden="true"></i><span class="site-header__label">المتجر</span></button>
+        <button class="site-header__button site-header__button--platform" type="button" data-nav="platform"><i class="site-header__icon fa-solid fa-layer-group" aria-hidden="true"></i><span class="site-header__label">المنصة</span></button>
+        <button class="site-header__button site-header__button--contact" type="button" data-nav="contact"><i class="site-header__icon fa-solid fa-envelope" aria-hidden="true"></i><span class="site-header__label">تواصل معي</span></button>
+    </header>
+
+    <!-- ===== المحتوى (فاضي حاليًا) ===== -->
+    <main class="site-main site-main--contact">
+        <div class="glass">
+            <div class="card">
+                <p>للدعاية والإعلان او التواصل لتنفيذ مشروع : Abo.Shaheen.Developer@gmail.com</p>
+                <p> للأسئة والإستفسارات (ديسكورد) : Abo.Shaheen.Developer</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- ===== الفوتر (نفس فوتر الرئيسية) - ثابت في آخر الصفحة، وبيظهر مع الهيدر في نفس اللحظة ===== -->
+    <footer class="site-footer site-footer--fixed">
+        <h3 class="site-footer__title">Abo Shaheen</h3>
+        <div class="social-bar">
+            <button class="social-bar__button social-bar__button--youtube" type="button" data-social="youtube"><i class="social-bar__icon fa-brands fa-youtube" aria-hidden="true"></i><span class="social-bar__label">YouTube</span></button>
+            <button class="social-bar__button social-bar__button--tiktok" type="button" data-social="tiktok"><i class="social-bar__icon fa-brands fa-tiktok" aria-hidden="true"></i><span class="social-bar__label">TikTok</span></button>
+            <button class="social-bar__button social-bar__button--instagram" type="button" data-social="instagram"><i class="social-bar__icon fa-brands fa-instagram" aria-hidden="true"></i><span class="social-bar__label">Instagram</span></button>
+            <button class="social-bar__button social-bar__button--github" type="button" data-social="github"><i class="social-bar__icon fa-brands fa-github" aria-hidden="true"></i><span class="social-bar__label">GitHub</span></button>
+            <button class="social-bar__button social-bar__button--linkedin" type="button" data-social="linkedin"><i class="social-bar__icon fa-brands fa-linkedin" aria-hidden="true"></i><span class="social-bar__label">LinkedIn</span></button>
+        </div>
+    </footer>
+
+    <!-- أزرار تبديل الثيم + إيقاف/تشغيل التأثيرات (نفس الرئيسية) -->
+    <div class="floating-toolbar floating-toolbar--contact">
+        <button class="floating-toolbar__button floating-toolbar__button--theme" type="button" aria-label="تفعيل الوضع الداكن" title="تبديل الوضع" data-action="toggle-theme"><i class="fa-solid fa-moon" aria-hidden="true"></i></button>
+        <button class="floating-toolbar__button floating-toolbar__button--effects" type="button" aria-label="إيقاف التأثيرات" aria-pressed="false" title="إيقاف التأثيرات" data-action="toggle-effects"><i class="fa-solid fa-circle-pause" aria-hidden="true"></i></button>
+    </div>
+
+    <script src="script.js" defer></script>
+</body>
+
+</html>
