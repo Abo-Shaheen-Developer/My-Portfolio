@@ -26,7 +26,7 @@
 
     --glass-bg: rgba(255, 255, 255, .034);               /* خلفية الزجاج الشفافة */
     --glass-border: 1px solid rgba(255, 255, 255, .363); /* حدود الزجاج */
-    --glass-blur: blur(7px);                             /* تغبيش خلفية الزجاج */
+    --glass-blur: blur(20px);                             /* تغبيش خلفية الزجاج */
 
     --surface-card: rgba(255, 255, 255, .616);           /* لون البطاقات الفاتحة داخل الأقسام */
     --surface-panel: rgba(255, 255, 255, .555);          /* لون لوحة المهارات والعناوين */
@@ -263,7 +263,8 @@ img {
     height: calc(450 * var(--unit));                     /* نفس العرض = دائرة */
     margin: 0 auto 36px;                                 /* موبايل: توسيط + 36px تحتها */
     border: 5px solid transparent;                       /* مكان الحدود (شكلها مرسوم في ::after عشان تتضبب لوحدها) */
-    border-radius: 50%;                                  /* شكل دائري */
+    border-radius: 50%; 
+    backdrop-filter: blur(5px);                                 /* شكل دائري */
     opacity: 0;                                          /* مخفية قبل أنيميشن الدخول */
     animation: portrait-rise 1s calc(1s + var(--intro-delay)) forwards; /* تظهر وتطلع لفوق */
     transform-origin: 50% 55%;                           /* مركز التصغير مع السكرول */
@@ -282,7 +283,7 @@ img {
     box-sizing: border-box;                              /* الحدود جوه المقاس */
     border: 5px solid rgba(255, 255, 255, .288);         /* حدود الدائرة */
     border-radius: 50%;                                  /* شكل دائري */
-    background: rgba(255, 255, 255, .103);               /* لون الدائرة الشفاف */
+    background: rgba(255, 255, 255, 0);               /* لون الدائرة الشفاف */
     -webkit-backdrop-filter: blur(var(--circle-blur));   /* تغبيش اللي ورا الدائرة (سفاري) */
     backdrop-filter: blur(var(--circle-blur));           /* تغبيش اللي ورا الدائرة */
     opacity: calc(1 - var(--portrait-progress));         /* تختفي مع السكرول */
@@ -904,6 +905,7 @@ html:not(.no-effects) .project-card__button:hover {
     border: solid 1px rgba(255, 255, 255, 0.452);
     border-radius: clamp(28px, 6vw, 50px);               /* حواف تصغر على الموبايل */
     background: rgba(255, 255, 255, 0.068);
+    backdrop-filter: var(--glass-blur);
     font-size: clamp(15px, 4vw, 25px);                   /* خط يتناسب مع العرض */
     line-height: 1.7;                                    /* ارتفاع سطر مريح */
     animation: footer-slide-up .8s var(--ease-out) var(--intro-delay) backwards; /* مخفي في الأول ثم يظهر بنفس توقيت وحركة الهيدر والفوتر */
