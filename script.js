@@ -58,6 +58,7 @@
         cosmos: {
             smoothing: 0.08,                 // نعومة اللحاق بالسكرول (أقل = أنعم)
             galaxy: { size: [0.36, 0.48], speed: 0.16, spin: 260, opacity: 0.75, blur: 2.2 },
+            saturn: { size: [0.30, 0.38], speed: 0.12, sway: 46, opacity: 0.75, blur: 2.2 },  // زحل (شمال) | sway = ثواني التمايل
             // size = نسبة من عرض الشاشة (أدنى، أقصى) | speed = سرعة الطلوع مع السكرول (1 = نفس سرعة الصفحة)
             // spin = ثواني اللفة الكاملة | opacity = الوضوح | blur = الضبابية بالبكسل
             nebulae: { count: 4, speed: 0.05 },                                         // عدد السُدم وسرعة طلوعها مع السكرول
@@ -300,6 +301,70 @@
             ctx.fillRect(0, 0, size, size);
         };
 
+        // رسم زحل: توهج + حلقات خلفية + كوكب بأحزمة وظل + حلقات أمامية
+        const drawSaturn = (canvas) => {
+            const size = canvas.width = canvas.height = 760;
+            const ctx = canvas.getContext("2d");
+            const c = size / 2;
+            const R = size * 0.17;                           // نصف قطر الكوكب
+            const squash = 0.26;                             // تفلطح الحلقات (ميلها عن الشاشة)
+            const ringIn = R * 1.28;
+            const ringOut = R * 2.2;
+
+            // هالة ناعمة حوالين الكوكب
+            const halo = ctx.createRadialGradient(c, c, R * 0.8, c, c, size / 2);
+            halo.addColorStop(0, "rgba(255,215,150,.22)");
+            halo.addColorStop(0.45, "rgba(190,150,255,.08)");
+            halo.addColorStop(1, "rgba(0,0,0,0)");
+            ctx.fillStyle = halo;
+            ctx.fillRect(0, 0, size, size);
+
+            // الحلقات: خطوط بيضاوية رفيعة كتير (فيها فجوة كاسيني)، نصف خلفي ونصف أمامي
+            const drawRings = (from, to) => {
+                const steps = 90;
+                for (let i = 0; i < steps; i++) {
+                    const t = i / (steps - 1);
+                    const r = ringIn + (ringOut - ringIn) * t;
+                    if (t > 0.56 && t < 0.64) continue;      // فجوة كاسيني
+                    const band = 0.5 + 0.5 * Math.sin(t * 38) * Math.sin(t * 11 + 1.3);
+                    const edgeFade = Math.min(1, t * 9, (1 - t) * 6);
+                    const alpha = (0.16 + 0.38 * band) * edgeFade * (t > 0.64 ? 0.8 : 1);
+                    ctx.strokeStyle = `rgba(${Math.round(222 - 30 * t)},${Math.round(196 - 36 * t)},${Math.round(150 - 20 * t)},${alpha.toFixed(3)})`;
+                    ctx.lineWidth = (ringOut - ringIn) / steps * 1.9;
+                    ctx.beginPath();
+                    ctx.ellipse(c, c, r, r * squash, 0, from, to);
+                    ctx.stroke();
+                }
+            };
+            drawRings(Math.PI, Math.PI * 2);                 // النص الخلفي (فوق الكوكب من ورا)
+
+            // جسم الكوكب: أحزمة أفقية + ظل ناحية اليمين
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(c, c, R, 0, Math.PI * 2);
+            ctx.clip();
+            const bands = ctx.createLinearGradient(0, c - R, 0, c + R);
+            const stops = [[0, "#8a6a3c"], [0.14, "#d9b878"], [0.26, "#c19a5b"], [0.4, "#ecd29a"], [0.52, "#c9a566"],
+                [0.64, "#e6c98c"], [0.78, "#b48a4e"], [0.9, "#d3b072"], [1, "#7a5a32"]];
+            stops.forEach(([p, col]) => bands.addColorStop(p, col));
+            ctx.fillStyle = bands;
+            ctx.fillRect(c - R, c - R, R * 2, R * 2);
+            for (let i = 0; i < 26; i++) {                   // تفاصيل رفيعة داخل الأحزمة
+                const y = c - R + Math.random() * R * 2;
+                ctx.fillStyle = `rgba(${Math.random() < 0.5 ? "255,235,190" : "90,60,30"},${rand(0.05, 0.14).toFixed(2)})`;
+                ctx.fillRect(c - R, y, R * 2, rand(1.5, 5));
+            }
+            const shade = ctx.createRadialGradient(c - R * 0.45, c - R * 0.4, R * 0.1, c, c, R * 1.08);
+            shade.addColorStop(0, "rgba(0,0,0,0)");
+            shade.addColorStop(0.6, "rgba(10,6,20,.35)");
+            shade.addColorStop(1, "rgba(5,3,15,.88)");
+            ctx.fillStyle = shade;
+            ctx.fillRect(c - R, c - R, R * 2, R * 2);
+            ctx.restore();
+
+            drawRings(0, Math.PI);                           // النص الأمامي (قدام الكوكب)
+        };
+
         // جرم: رسمه + حجمه ومكانه وميلانه العشوائي
         const setup = (selector, config, draw, placement) => {
             const body = host.querySelector(selector);
@@ -310,9 +375,10 @@
 
             const size = Math.round(window.innerWidth * rand(config.size[0], config.size[1]));
             body.style.setProperty("--size", `${Math.max(size, 150)}px`);
-            body.style.setProperty("--tilt", `${rand(-35, 35).toFixed(1)}deg`);
+            body.style.setProperty("--tilt", `${(placement.tilt ?? rand(-35, 35)).toFixed(1)}deg`);
             body.style.setProperty("--flat", placement.flat.toFixed(2));
             if (config.spin) body.style.setProperty("--spin", `${config.spin}s`);
+            if (config.sway) body.style.setProperty("--sway", `${config.sway}s`);
             body.style.setProperty("--opacity", config.opacity);
             body.style.setProperty("--blur", `${config.blur}px`);
             body.style.top = `${placement.top.toFixed(1)}vh`;
@@ -323,8 +389,36 @@
         const parallax = [
             // درب التبانة: على اليمين، ارتفاع عشوائي، جزء منها بيطلع برا الحافة
             setup(".cosmos__body--galaxy", settings.galaxy, drawGalaxy,
-                { side: "right", edge: rand(-6, 4), top: rand(2, 34), flat: rand(0.55, 0.8) })
+                { side: "right", edge: rand(-6, 4), top: rand(2, 34), flat: rand(0.55, 0.8) }),
+            // زحل: فوق اسم ابو شاهين مباشرة (المكان الحقيقي بيتحسب بعد الرسم)
+            setup(".cosmos__body--saturn", settings.saturn, drawSaturn,
+                { side: "left", edge: 0, top: 10, flat: 1, tilt: rand(-12, 12) })
         ].filter(Boolean);
+
+        // ---------- تثبيت زحل فوق اسم الهيرو (h1) ----------
+        const saturnBody = host.querySelector(".cosmos__body--saturn");
+        const placeSaturn = () => {
+            const title = document.querySelector(".hero__title");
+            if (!saturnBody || !title) return;
+            const box = saturnBody.getBoundingClientRect();
+            const size = saturnBody.offsetWidth;
+            const radius = size * 0.17;                      // نفس نصف قطر الكوكب في drawSaturn
+            const rect = title.getBoundingClientRect();
+            const range = document.createRange();            // عرض النص الفعلي (الـ h1 نفسه أعرض من الاسم)
+            range.selectNodeContents(title);
+            const text = range.getBoundingClientRect();
+            const narrow = window.innerWidth < 900;          // موبايل: الاسم تحت الصورة، فزحل بيقعد جنبه مش فوقه
+            const centerX = narrow ? Math.max(radius * 1.2, text.left - radius * 1.1) : text.left + text.width / 2;
+            const centerY = narrow ? text.top + window.scrollY + text.height / 2
+                                   : rect.top + window.scrollY - radius * 1.7; // فوق الاسم بمسافة تسع الحلقات
+            saturnBody.style.right = "auto";
+            saturnBody.style.left = `${(centerX - size / 2).toFixed(1)}px`;
+            saturnBody.style.top = `${(centerY - size / 2).toFixed(1)}px`;
+        };
+        placeSaturn();
+        window.addEventListener("load", placeSaturn);
+        window.addEventListener("resize", placeSaturn);
+        document.querySelector(".hero__title")?.addEventListener("animationend", placeSaturn); // بعد ما الاسم يخلّص حركة دخوله
 
         // ---------- السُدم: سحب ملونة ناعمة في أماكن عشوائية ----------
         const nebulaeHost = host.querySelector(".cosmos__nebulae");

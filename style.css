@@ -687,7 +687,7 @@ img {
     backdrop-filter: var(--glass-blur);                  /* تغبيش */
     border-radius: 16px;                                 /* زوايا ناعمة */
     cursor: pointer;                                     /* مؤشر اليد */
-    transition: background-color .25s ease, opacity .25s ease; /* هوفر وتعطيل */
+    transition: background-color var(--theme-duration, .25s) ease, color var(--theme-duration, .25s) ease, opacity .25s ease; /* هوفر وتعطيل وتبديل الثيم */
 }
 
 /* تظهر الأسهم لما JS يكتشف إن فيه مشاريع مخفية */
@@ -908,18 +908,24 @@ html:not(.no-effects) .project-card__button:hover {
     backdrop-filter: var(--glass-blur);
     font-size: clamp(15px, 4vw, 25px);                   /* خط يتناسب مع العرض */
     line-height: 1.7;                                    /* ارتفاع سطر مريح */
-    animation: footer-slide-up .8s var(--ease-out) var(--intro-delay) backwards; /* مخفي في الأول ثم يظهر بنفس توقيت وحركة الهيدر والفوتر */
+    animation: glass-expand 1s var(--ease-out) var(--intro-delay) backwards; /* يبدأ شريط ضيق جدًا في النص ثم يتوسع */
 }
 
 .card {
     padding: clamp(12px, 3vw, 18px) clamp(10px, 3vw, 16px); /* حشو يتناسب مع العرض */
     border-radius: clamp(22px, 5vw, 40px);               /* حواف تصغر على الموبايل */
     background: rgba(255, 255, 255, 0.247);
+    transition: background-color var(--theme-duration, .3s) ease, color var(--theme-duration, .3s) ease; /* تبديل ناعم بين الثيمين */
 }
 
 .card p {
     margin: 0 0 .6em;                                    /* مسافة بين السطرين */
     overflow-wrap: anywhere;                             /* الإيميل الطويل ما يخرجش بره البطاقة */
+    animation: card-text-in .8s ease calc(var(--intro-delay) + .8s) backwards; /* النص يظهر بالتدريج بعد ما المربع يتوسع */
+}
+
+.card p:nth-child(2) {
+    animation-delay: calc(var(--intro-delay) + 1.05s);   /* السطر التاني بعد الأول بشوية */
 }
 
 .card p:last-child {
@@ -1233,6 +1239,11 @@ html:not(.no-effects) .floating-toolbar__button:hover {
     animation: cosmos-spin var(--spin, 240s) linear infinite; /* دوران بطيء */
 }
 
+/* زحل: بدل اللفة الكاملة، يتمايل ويطفو ببطء (الحلقات لو لفت لفة كاملة هتبان غلط) */
+.cosmos__body--saturn .cosmos__canvas {
+    animation: saturn-float var(--sway, 46s) ease-in-out infinite alternate; /* تمايل + طفو هادي */
+}
+
 /* ظهور الفضاء (المجرة والخلفية والنجوم) بسلاسة عند فتح الصفحة */
 @keyframes space-fade-in {
     from { opacity: 0; }                                 /* مخفي */
@@ -1242,6 +1253,12 @@ html:not(.no-effects) .floating-toolbar__button:hover {
 /* دوران كامل */
 @keyframes cosmos-spin {
     to { transform: rotate(360deg); }                    /* لفة كاملة */
+}
+
+/* تمايل زحل وطفوه */
+@keyframes saturn-float {
+    from { transform: translate3d(-1.2%, -2.5%, 0) rotate(-7deg); }  /* البداية */
+    to { transform: translate3d(1.2%, 2.5%, 0) rotate(7deg); }       /* النهاية */
 }
 
 /* انجراف السديم */
@@ -1261,6 +1278,7 @@ html:not(.no-effects) .floating-toolbar__button:hover {
     .cosmos,
     .stars,
     .cosmos__canvas,
+    .cosmos__body--saturn .cosmos__canvas,
     .cosmos__nebula,
     .cosmos__dust { animation: none; }                   /* إيقاف الحركات */
 }
@@ -1311,6 +1329,38 @@ html.theme-dark .service-card {
 /* نص أزرار الهيدر في الثيم الداكن */
 html.theme-dark .site-header__button {
     color: #f8faff;                                      /* نص فاتح */
+}
+
+/* أسهم الانتقال بين المشاريع في الثيم الداكن */
+html.theme-dark .projects-slider__arrow {
+    color: #f4f6ff;                                      /* سهم فاتح */
+    background: rgba(28, 33, 55, .86);                   /* زجاج داكن */
+    box-shadow: 0 4px 18px rgba(0, 0, 0, .45);           /* ظل بدل التوهج الأبيض */
+}
+
+html.theme-dark .projects-slider__arrow:hover:not(:disabled) {
+    background: rgba(48, 56, 92, .95);                   /* أفتح شوية عند الهوفر */
+}
+
+html.theme-dark .projects-slider__arrow:focus-visible {
+    outline-color: #aab4ff;                              /* إطار تركيز مناسب للداكن */
+}
+
+/* صفحة التواصل في الثيم الداكن: الإطار الزجاجي والمربع اللي فيه البريد */
+html.theme-dark .glass {
+    border-color: rgba(180, 190, 255, .24);              /* حدود زجاج داكنة */
+    background: rgba(12, 15, 30, .45);                   /* زجاج داكن */
+}
+
+html.theme-dark .card {
+    background: rgba(25, 29, 48, .94);                   /* نفس لون البطاقات الداكنة */
+    color: #f4f6ff;                                      /* نص فاتح */
+}
+
+/* هوفر الأزرار العائمة في الثيم الداكن: ظل داكن بدل التوهج الأبيض */
+html.theme-dark:not(.no-effects) .floating-toolbar__button:hover {
+    background-color: rgba(40, 47, 78, .98);             /* داكن أفتح شوية */
+    box-shadow: 0 0 10px 2px rgba(0, 0, 0, .75), 0 0 26px 6px rgba(5, 8, 30, .7); /* ظل داكن */
 }
 
 /* الأزرار العائمة في الثيم الداكن */
@@ -1393,6 +1443,19 @@ html.theme-dark .floating-toolbar__button {
 @keyframes button-slide-up {
     from { transform: translateY(40px); opacity: 0; }    /* بداية: تحت وشفاف */
     to   { transform: translateY(0);    opacity: 1; }    /* نهاية: في مكانه */
+}
+
+/* مربع التواصل: يبدأ ضيق جدًا في منتصف مكانه ثم يتوسع للعرض الكامل (قص بدل تغيير العرض عشان الارتفاع ما يتغيرش) */
+@keyframes glass-expand {
+    from { clip-path: inset(0 calc(50% - 26px) round clamp(28px, 6vw, 50px)); opacity: 0; } /* شريط عرضه ~52px */
+    20%  { opacity: 1; }                                 /* يظهر الشريط الأول */
+    to   { clip-path: inset(0 0 round clamp(28px, 6vw, 50px)); opacity: 1; }  /* العرض الكامل */
+}
+
+/* ظهور تدريجي لنص مربع التواصل */
+@keyframes card-text-in {
+    from { opacity: 0; transform: translateY(8px); }     /* مخفي وتحت شوية */
+    to   { opacity: 1; transform: translateY(0); }       /* ظاهر في مكانه */
 }
 
 /* الفوتر (صفحة التواصل) يطلع من تحت: عكس الهيدر بنفس المدة */
@@ -1545,7 +1608,8 @@ html.theme-dark .floating-toolbar__button {
     .site-header,
     .site-header__button,
     .site-footer--fixed,
-    .glass {
+    .glass,
+    .card p {
         opacity: 1 !important;                           /* ظاهرة دايمًا */
         animation: none !important;                      /* بدون حركة دخول */
     }
