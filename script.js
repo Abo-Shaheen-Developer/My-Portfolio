@@ -392,7 +392,10 @@
                 { side: "right", edge: rand(-6, 4), top: rand(2, 34), flat: rand(0.55, 0.8) }),
             // زحل: فوق اسم ابو شاهين مباشرة (المكان الحقيقي بيتحسب بعد الرسم)
             setup(".cosmos__body--saturn", settings.saturn, drawSaturn,
-                { side: "left", edge: 0, top: 10, flat: 1, tilt: rand(-12, 12) })
+                // لو مفيش اسم في الصفحة (صفحة التواصل): على الشمال في النص زي المجرة اللي على اليمين
+                document.querySelector(".hero__title")
+                    ? { side: "left", edge: 0, top: 10, flat: 1, tilt: rand(-12, 12) }
+                    : { side: "left", edge: rand(-4, 4), top: window.innerWidth < 700 ? rand(52, 60) : rand(22, 40), flat: 1, tilt: rand(-12, 12) }) // موبايل: تحت المربع مش ورا منه
         ].filter(Boolean);
 
         // ---------- تثبيت زحل فوق اسم الهيرو (h1) ----------
