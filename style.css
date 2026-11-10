@@ -316,6 +316,14 @@ img {
     filter: opacity(calc(1 - var(--portrait-progress))); /* تختفي مع السكرول */
 }
 
+/* الصورة كخلفية CSS (مش <img>) عشان جوجل ما يختارهاش كصورة مصغّرة جنب الرابط */
+.hero__glow,
+.hero__photo {
+    display: block;                                      /* عنصر عادي بدل img */
+    aspect-ratio: 900 / 1105;                            /* نفس نسبة الصورة الأصلية */
+    background: url("img/me2.webp") center / 100% 100% no-repeat; /* صورة الشخص */
+}
+
 /* نسخة بيضاء مبلورة من الشخصية: توهج يتبع حدود الجسم */
 .hero__glow {
     position: absolute;                                  /* فوق الدائرة */
