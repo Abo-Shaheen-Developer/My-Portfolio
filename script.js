@@ -29,7 +29,6 @@
         // الروابط: ضع الرابط بين علامتي الاقتباس (الفاضي = الزر مش بيعمل حاجة)
         urls: {
             store: "",                       // رابط المتجر
-            platform: "",                    // رابط المنصة
             projects: {
                 1: "https://abo-shaheen-developer.github.io/Himma/",        // رابط مشروع "همّه"
                 2: "https://abo-shaheen-developer.github.io/calculator/",   // رابط مشروع "الآلة الحاسبة"
@@ -654,7 +653,7 @@
             home: () => { window.location.href = "index.html"; },
             contact: () => { window.location.href = "contact.html"; },
             store: () => openExternalLink(CONFIG.urls.store),
-            platform: () => openExternalLink(CONFIG.urls.platform)
+            platform: () => { window.location.href = "platform/index.html"; } // المنصة (مسار داخل المشروع)
         };
 
         document.querySelectorAll("[data-nav]").forEach((button) => {

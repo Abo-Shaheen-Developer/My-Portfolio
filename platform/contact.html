@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>تواصل معي | Abo Shaheen</title>
+    <meta name="robots" content="noimageindex, max-image-preview:none">
+    <meta name="description" content="منصة تعليم البرمجة من الصفر إلى الاحتراف">
+    <meta name="keywords" content="Abo Shaheen, ابو شاهين, تعليم البرمجة, منصة تعليمية">
+    <meta name="author" content="Abo Shaheen">
+
+    <!-- Open Graph (واتساب، فيسبوك، تيليجرام، لينكدإن) -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Abo Shaheen">
+    <meta property="og:locale" content="ar_AR">
+    <meta property="og:title" content="Abo Shaheen | منصة تعليم البرمجة">
+    <meta property="og:description" content="منصة تعليم البرمجة من الصفر إلى الاحتراف">
+    <meta property="og:image:alt" content="Abo Shaheen">
+    <meta name="theme-color" content="#000633">
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="48x48" href="img/favicon-48.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="img/logo.png">
+    <link rel="apple-touch-icon" href="img/logo-512.png">
+
+    <!-- الخطوط: طلب واحد (Rubik للنصوص + Playwrite للشعار + JetBrains Mono لأرقام الخلفية) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Playwrite+DK+Loopet:wght@100..400&family=Rubik:wght@300..900&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css?v=1">
+</head>
+
+<body>
+    <!-- ===== الخلفية التقنية: شبكة + أرقام 0 و 1 نازلة + مقتطفات كود (بيرسمها script.js) ===== -->
+    <div class="tech-bg" aria-hidden="true">
+        <div class="tech-bg__grid"></div>
+        <canvas class="tech-bg__digits"></canvas>
+        <div class="tech-bg__glow"></div>
+        <span class="tech-bg__snippet" style="--x:6;--y:22;--dur:24s;--delay:0s">const skill = learn("JavaScript");</span>
+        <span class="tech-bg__snippet" style="--x:62;--y:14;--dur:21s;--delay:3s">&lt;/&gt;</span>
+        <span class="tech-bg__snippet" style="--x:78;--y:46;--dur:26s;--delay:7s">print("Hello, World!")</span>
+        <span class="tech-bg__snippet" style="--x:10;--y:62;--dur:23s;--delay:11s">git commit -m "first lesson"</span>
+        <span class="tech-bg__snippet" style="--x:44;--y:84;--dur:25s;--delay:5s">function start() { return 1; }</span>
+        <span class="tech-bg__snippet" style="--x:84;--y:80;--dur:22s;--delay:9s">{ }</span>
+        <span class="tech-bg__snippet" style="--x:30;--y:8;--dur:27s;--delay:13s">npm run dev</span>
+        <span class="tech-bg__snippet" style="--x:70;--y:30;--dur:24s;--delay:15s">for (let i = 0; i &lt; 10; i++)</span>
+        <span class="tech-bg__snippet" style="--x:3;--y:44;--dur:28s;--delay:17s">=&gt; console.log("code")</span>
+        <span class="tech-bg__snippet" style="--x:52;--y:66;--dur:22s;--delay:19s">if (ready) { go(); }</span>
+        <span class="tech-bg__snippet" style="--x:20;--y:90;--dur:26s;--delay:21s">#include &lt;stdio.h&gt;</span>
+        <span class="tech-bg__snippet" style="--x:88;--y:60;--dur:23s;--delay:2s">01001000 01101001</span>
+    </div>
+
+    <!-- ===== الهيدر (نفس هيدر الرئيسية) ===== -->
+    <header class="site-header">
+        <button class="site-header__button site-header__button--home" type="button" data-nav="home"><i class="site-header__icon fa-solid fa-house" aria-hidden="true"></i><span class="site-header__label">الرئيسية</span></button>
+        <button class="site-header__button site-header__button--courses" type="button" data-nav="courses"><i class="site-header__icon fa-solid fa-graduation-cap" aria-hidden="true"></i><span class="site-header__label">الكورسات</span></button>
+        <button class="site-header__button site-header__button--author" type="button" data-nav="author"><i class="site-header__icon fa-solid fa-user" aria-hidden="true"></i><span class="site-header__label" dir="ltr">Abo Shaheen</span></button>
+        <button class="site-header__button site-header__button--contact" type="button" data-nav="contact"><i class="site-header__icon fa-solid fa-envelope" aria-hidden="true"></i><span class="site-header__label">تواصل معي</span></button>
+    </header>
+
+    <!-- ===== المحتوى (صفحة التواصل) ===== -->
+    <main class="site-main site-main--contact">
+        <div class="glass">
+            <div class="card">
+                <p>للدعاية والإعلان او التواصل لتنفيذ مشروع : Abo.Shaheen.Developer@gmail.com</p>
+                <p> للأسئة والإستفسارات (ديسكورد) : Abo.Shaheen.Developer</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- ===== الفوتر (نفس فوتر الرئيسية) - ثابت في آخر الصفحة، وبيظهر مع الهيدر في نفس اللحظة ===== -->
+    <footer class="site-footer site-footer--fixed">
+        <h3 class="site-footer__title">Abo Shaheen</h3>
+        <span class="credit-copy">© جميع الحقوق محفوظة — <bdi dir="ltr">Abo Shaheen</bdi></span>
+        <div class="social-bar">
+            <button class="social-bar__button social-bar__button--youtube" type="button" data-social="youtube"><i class="social-bar__icon fa-brands fa-youtube" aria-hidden="true"></i><span class="social-bar__label">YouTube</span></button>
+            <button class="social-bar__button social-bar__button--tiktok" type="button" data-social="tiktok"><i class="social-bar__icon fa-brands fa-tiktok" aria-hidden="true"></i><span class="social-bar__label">TikTok</span></button>
+            <button class="social-bar__button social-bar__button--instagram" type="button" data-social="instagram"><i class="social-bar__icon fa-brands fa-instagram" aria-hidden="true"></i><span class="social-bar__label">Instagram</span></button>
+            <button class="social-bar__button social-bar__button--github" type="button" data-social="github"><i class="social-bar__icon fa-brands fa-github" aria-hidden="true"></i><span class="social-bar__label">GitHub</span></button>
+            <button class="social-bar__button social-bar__button--linkedin" type="button" data-social="linkedin"><i class="social-bar__icon fa-brands fa-linkedin" aria-hidden="true"></i><span class="social-bar__label">LinkedIn</span></button>
+        </div>
+    </footer>
+
+    <!-- أزرار تبديل الثيم + إيقاف/تشغيل التأثيرات (نفس الرئيسية) -->
+    <div class="floating-toolbar floating-toolbar--contact">
+        <button class="floating-toolbar__button floating-toolbar__button--theme" type="button" aria-label="تفعيل الوضع الداكن" title="تبديل الوضع" data-action="toggle-theme"><i class="fa-solid fa-moon" aria-hidden="true"></i></button>
+        <button class="floating-toolbar__button floating-toolbar__button--effects" type="button" aria-label="إيقاف التأثيرات" aria-pressed="false" title="إيقاف التأثيرات" data-action="toggle-effects"><i class="fa-solid fa-circle-pause" aria-hidden="true"></i></button>
+    </div>
+
+    <script src="script.js" defer></script>
+</body>
+
+</html>

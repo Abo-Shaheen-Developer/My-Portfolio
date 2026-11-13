@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Abo Shaheen | تسجيل الدخول</title>
+    <meta name="description" content="تسجيل الدخول أو إنشاء حساب في منصة Abo Shaheen التعليمية">
+    <meta name="theme-color" content="#000633">
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="48x48" href="img/favicon-48.png">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Playwrite+DK+Loopet:wght@100..400&family=Rubik:wght@300..900&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css?v=login-1">
+</head>
+<body class="auth-page">
+    <div class="tech-bg" aria-hidden="true">
+        <div class="tech-bg__grid"></div>
+        <canvas class="tech-bg__digits"></canvas>
+        <div class="tech-bg__glow"></div>
+        <span class="tech-bg__snippet" style="--x:6;--y:22;--dur:24s;--delay:0s">const skill = learn("JavaScript");</span>
+        <span class="tech-bg__snippet" style="--x:62;--y:14;--dur:21s;--delay:3s">&lt;/&gt;</span>
+        <span class="tech-bg__snippet" style="--x:78;--y:46;--dur:26s;--delay:7s">print("Hello, World!")</span>
+        <span class="tech-bg__snippet" style="--x:10;--y:62;--dur:23s;--delay:11s">git commit -m "first lesson"</span>
+        <span class="tech-bg__snippet" style="--x:44;--y:84;--dur:25s;--delay:5s">function start() { return 1; }</span>
+        <span class="tech-bg__snippet" style="--x:84;--y:80;--dur:22s;--delay:9s">{ }</span>
+        <span class="tech-bg__snippet" style="--x:30;--y:8;--dur:27s;--delay:13s">npm run dev</span>
+        <span class="tech-bg__snippet" style="--x:70;--y:30;--dur:24s;--delay:15s">for (let i = 0; i &lt; 10; i++)</span>
+    </div>
+
+    <!-- ===== الهيدر (شغال بنفس وظائف باقي الصفحات عن طريق data-nav) ===== -->
+    <header class="site-header" aria-label="تنقل المنصة">
+        <button class="site-header__button site-header__button--home" type="button" data-nav="home"><i class="site-header__icon fa-solid fa-house" aria-hidden="true"></i><span class="site-header__label">الرئيسية</span></button>
+        <button class="site-header__button site-header__button--courses" type="button" data-nav="courses"><i class="site-header__icon fa-solid fa-graduation-cap" aria-hidden="true"></i><span class="site-header__label">الكورسات</span></button>
+        <button class="site-header__button site-header__button--author" type="button" data-nav="author"><i class="site-header__icon fa-solid fa-user" aria-hidden="true"></i><span class="site-header__label" dir="ltr">Abo Shaheen</span></button>
+        <button class="site-header__button site-header__button--contact" type="button" data-nav="contact"><i class="site-header__icon fa-solid fa-envelope" aria-hidden="true"></i><span class="site-header__label">تواصل معي</span></button>
+    </header>
+
+    <main class="auth-main">
+        <section class="auth-card" aria-label="الحساب">
+            <div class="auth-brand">
+                <div class="auth-brand__icon"><i class="fa-solid fa-code"></i></div>
+                <div>
+                    <h1>Abo Shaheen</h1>
+                    <p>منصة تعليم البرمجة</p>
+                </div>
+            </div>
+
+            <div class="auth-tabs" role="tablist">
+                <button class="auth-tab is-active" type="button" data-auth-tab="login">تسجيل الدخول</button>
+                <button class="auth-tab" type="button" data-auth-tab="signup">إنشاء حساب</button>
+            </div>
+
+            <form class="auth-form is-active" data-auth-panel="login" novalidate>
+                <div class="auth-heading">
+                    <h2>مرحبًا بعودتك</h2>
+                    <p>سجّل دخولك لمتابعة رحلة التعلم.</p>
+                </div>
+                <label class="auth-field">
+                    <span>البريد الإلكتروني</span>
+                    <div><i class="fa-regular fa-envelope"></i><input type="email" placeholder="example@email.com" autocomplete="email"></div>
+                </label>
+                <label class="auth-field">
+                    <span>كلمة المرور</span>
+                    <div><i class="fa-solid fa-lock"></i><input type="password" placeholder="••••••••" autocomplete="current-password"></div>
+                </label>
+                <button class="auth-submit" type="submit"><i class="fa-solid fa-right-to-bracket"></i> تسجيل الدخول</button>
+                <p class="auth-switch">ليس لديك حساب؟ <button type="button" data-switch="signup">أنشئ حسابًا الآن</button></p>
+            </form>
+
+            <form class="auth-form" data-auth-panel="signup" novalidate>
+                <div class="auth-heading">
+                    <h2>أنشئ حسابك</h2>
+                    <p>ابدأ رحلتك في تعلم البرمجة من اليوم.</p>
+                </div>
+                <label class="auth-field">
+                    <span>الاسم</span>
+                    <div><i class="fa-regular fa-user"></i><input type="text" placeholder="اكتب اسمك" autocomplete="name"></div>
+                </label>
+                <label class="auth-field">
+                    <span>البريد الإلكتروني</span>
+                    <div><i class="fa-regular fa-envelope"></i><input type="email" placeholder="example@email.com" autocomplete="email"></div>
+                </label>
+                <label class="auth-field">
+                    <span>كلمة المرور</span>
+                    <div><i class="fa-solid fa-lock"></i><input type="password" placeholder="أنشئ كلمة مرور قوية" autocomplete="new-password"></div>
+                </label>
+                <button class="auth-submit" type="submit"><i class="fa-solid fa-user-plus"></i> إنشاء حساب</button>
+                <p class="auth-switch">لديك حساب بالفعل؟ <button type="button" data-switch="login">سجّل الدخول</button></p>
+            </form>
+            <p class="auth-note"><i class="fa-solid fa-circle-info"></i> هذه الواجهة تصميم تجريبي فقط، ولا يتم إرسال أو حفظ أي بيانات.</p>
+        </section>
+    </main>
+
+    <!-- ===== الفوتر (أزرار التواصل شغالة عن طريق data-social) ===== -->
+    <footer class="site-footer site-footer--fixed">
+        <h3 class="site-footer__title">Abo Shaheen</h3>
+        <span class="credit-copy">© جميع الحقوق محفوظة — <bdi dir="ltr">Abo Shaheen</bdi></span>
+        <div class="social-bar">
+            <button class="social-bar__button social-bar__button--youtube" type="button" data-social="youtube"><i class="social-bar__icon fa-brands fa-youtube" aria-hidden="true"></i><span class="social-bar__label">YouTube</span></button>
+            <button class="social-bar__button social-bar__button--tiktok" type="button" data-social="tiktok"><i class="social-bar__icon fa-brands fa-tiktok" aria-hidden="true"></i><span class="social-bar__label">TikTok</span></button>
+            <button class="social-bar__button social-bar__button--instagram" type="button" data-social="instagram"><i class="social-bar__icon fa-brands fa-instagram" aria-hidden="true"></i><span class="social-bar__label">Instagram</span></button>
+            <button class="social-bar__button social-bar__button--github" type="button" data-social="github"><i class="social-bar__icon fa-brands fa-github" aria-hidden="true"></i><span class="social-bar__label">GitHub</span></button>
+            <button class="social-bar__button social-bar__button--linkedin" type="button" data-social="linkedin"><i class="social-bar__icon fa-brands fa-linkedin" aria-hidden="true"></i><span class="social-bar__label">LinkedIn</span></button>
+        </div>
+    </footer>
+
+    <!-- الأزرار العائمة: تبديل الثيم + إيقاف/تشغيل التأثيرات (نفس أزرار باقي الصفحات) -->
+    <div class="floating-toolbar">
+        <button class="floating-toolbar__button floating-toolbar__button--theme" type="button" aria-label="تفعيل الوضع الداكن" title="تبديل الوضع" data-action="toggle-theme"><i class="fa-solid fa-moon" aria-hidden="true"></i></button>
+        <button class="floating-toolbar__button floating-toolbar__button--effects" type="button" aria-label="إيقاف التأثيرات" aria-pressed="false" title="إيقاف التأثيرات" data-action="toggle-effects"><i class="fa-solid fa-circle-pause" aria-hidden="true"></i></button>
+    </div>
+
+    <script src="script.js" defer></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // مكان الأزرار العائمة فوق الفوتر مباشرة (ارتفاع الفوتر بيتغير حسب الشاشة)
+            const footer = document.querySelector('.site-footer');
+            const syncFooterSpace = () => {
+                if (!footer) return;
+                const space = footer.offsetHeight + (parseFloat(getComputedStyle(footer).marginBottom) || 0);
+                document.documentElement.style.setProperty('--auth-footer-h', space + 'px');
+            };
+            syncFooterSpace();
+            window.addEventListener('resize', syncFooterSpace);
+            if ('ResizeObserver' in window && footer) new ResizeObserver(syncFooterSpace).observe(footer);
+
+            const setMode = (mode) => {
+                document.querySelectorAll('[data-auth-tab]').forEach(btn => btn.classList.toggle('is-active', btn.dataset.authTab === mode));
+                document.querySelectorAll('[data-auth-panel]').forEach(panel => panel.classList.toggle('is-active', panel.dataset.authPanel === mode));
+            };
+            document.querySelectorAll('[data-auth-tab]').forEach(btn => btn.addEventListener('click', () => setMode(btn.dataset.authTab)));
+            document.querySelectorAll('[data-switch]').forEach(btn => btn.addEventListener('click', () => setMode(btn.dataset.switch)));
+            document.querySelectorAll('.auth-form').forEach(form => form.addEventListener('submit', e => e.preventDefault()));
+        });
+    </script>
+</body>
+</html>

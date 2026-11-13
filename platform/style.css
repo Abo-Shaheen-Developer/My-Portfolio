@@ -1,0 +1,2173 @@
+/* ==========================================================================
+    - ملف التنسيق الرئيسي لمنصة Abo Shaheen لتعليم البرمجة (الرئيسية وصفحة التواصل)
+   الفهرس:
+   1) المتغيرات          2) الأساسيات           3) الهيدر
+   4) البطاقة التعريفية (Hero) + أيقونات التقنيات + أزرار الحساب
+   5) صفحة التواصل       6) الفوتر              7) الأزرار العائمة
+   8) الخلفية التقنية (أرقام 0 و 1)
+   9) الثيم الداكن       10) ظهور الفوتر عند السكرول
+   11) الحركات (Keyframes)   12) تقليل الحركة    13) التجاوب (Media Queries)
+   14) إيقاف التأثيرات   15) سهم "انزل لتحت"
+   ملاحظة: كل سطر عليه كومنت يشرحه، وفي الـ media queries الكومنت بيذكر المقاس.
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1) المتغيرات
+   ========================================================================== */
+:root {
+    --intro-delay: .5s;                                  /* تأخير بداية كل أنيميشن الدخول عند فتح الصفحة (كل المقاسات) */
+    --theme-duration: .95s;                              /* مدة تحول الثيم بين الفاتح والداكن (كل المقاسات) */
+
+    --unit: max(.3px, min(calc((100vw - 32px) * .00167), calc((100svh - 410px) * .00168), .92px)); /* وحدة التناسب: بتتحسب من عرض وارتفاع الشاشة معًا فيظهر الهيرو كله (مع الأزرار) دايمًا (موبايل / تابلت بالطول) */
+    --hero-text-width: clamp(260px, 36vw, 420px);        /* عرض عمود الاسم والوصف في الهيرو */
+
+    --font-body: "Rubik", sans-serif;                    /* خط النصوص العامة */
+    --font-brand: "Playwrite DK Loopet", cursive;        /* خط الاسم / الشعار */
+
+    --glass-bg: rgba(255, 255, 255, .034);               /* خلفية الزجاج الشفافة */
+    --glass-border: 1px solid rgba(255, 255, 255, .363); /* حدود الزجاج */
+    --glass-blur: blur(20px);                             /* تغبيش خلفية الزجاج */
+
+    --surface-card: rgba(255, 255, 255, .616);           /* لون بطاقات الكورسات الفاتحة */
+    --surface-panel: rgba(255, 255, 255, .555);          /* لون عنوان القسم */
+
+
+    --gradient-button: linear-gradient(to left, blue, rgb(0, 153, 255)); /* تدرج أزرار اشترك الآن والأسهم */
+    --ease-out: cubic-bezier(.22, 1, .36, 1);            /* منحنى حركة ناعم في آخره */
+
+    --section-width: 85%;                                /* عرض القسم من عرض المحتوى */
+    --section-gap: 120px;                                /* المسافة الرأسية بين الأقسام (بتسيب مكان لعنوان القسم العائم) */
+
+}
+
+
+/* ==========================================================================
+   2) الأساسيات
+   ========================================================================== */
+
+/* ضبط الصندوق لكل العناصر */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;                              /* العرض يشمل الحشو والحدود */
+}
+
+/* عنصر الصفحة الأساسي: خلفية + إخفاء شريط التمرير */
+html {
+    overflow-x: hidden;                                  /* منع السكرول الأفقي للصفحة كلها */
+    scrollbar-width: none;                               /* إخفاء شريط التمرير في Firefox */
+    -ms-overflow-style: none;                            /* إخفاء شريط التمرير في Edge القديم */
+    position: relative;                                  /* مرجع لطبقات الخلفية */
+    isolation: isolate;                                  /* عزل الطبقات عشان الخلفية تفضل تحت المحتوى */
+    background: #000633;                                 /* لون احتياطي لحد ما التدرج يتحمل */
+    color: white;                                        /* لون النص الافتراضي */
+}
+
+/* إخفاء شريط التمرير في Chrome / Safari / Edge */
+html::-webkit-scrollbar {
+    display: none;                                       /* إخفاء الشريط */
+    width: 0;                                            /* عرض صفر */
+    height: 0;                                           /* ارتفاع صفر */
+}
+
+/* طبقتان للخلفية حتى يتغير التدرج نفسه بسلاسة عند تبديل الثيم */
+html::before,
+html::after {
+    content: "";                                         /* لازم عشان العنصر الوهمي يظهر */
+    position: fixed;                                     /* ثابتة مع الشاشة */
+    inset: 0;                                            /* تغطي الشاشة كلها */
+    z-index: -1;                                         /* خلف كل المحتوى */
+    pointer-events: none;                                /* ما تمنعش الضغط على اللي فوقها */
+    transition: opacity var(--theme-duration) ease;      /* تبديل ناعم بين الخلفيتين */
+}
+
+/* خلفية الثيم الفاتح (الأزرق) */
+html::before {
+    background: linear-gradient(to right, rgb(1, 3, 24), rgb(10, 6, 70) 55%, rgb(38, 8, 125)); /* تدرج فضاء عميق */
+    opacity: 1;                                          /* ظاهرة في الثيم الفاتح */
+}
+
+/* خلفية الثيم الداكن */
+html::after {
+    background: linear-gradient(to right, #050713, #11152c 55%, #17102e); /* تدرج داكن */
+    opacity: 0;                                          /* مخفية في الثيم الفاتح */
+}
+
+/* الجسم: عمود طويل بحيث الفوتر ينزل لآخر الصفحة */
+body {
+    display: flex;                                       /* ترتيب مرن */
+    flex-direction: column;                              /* العناصر تحت بعض */
+    min-height: 100vh;                                   /* أقل ارتفاع = الشاشة (احتياطي للمتصفحات القديمة) */
+    min-height: 100svh;                                  /* ارتفاع الشاشة الصغير الثابت على الموبايل */
+    margin: 0;                                           /* إلغاء الهامش الافتراضي */
+    font-family: var(--font-body);                       /* خط النصوص */
+}
+
+/* الأزرار ترث خط الصفحة */
+button {
+    font-family: inherit;                                /* نفس خط الصفحة */
+}
+
+/* الصور ما تتعداش عرض حاويتها */
+img {
+    max-width: 100%;                                     /* ما تزيدش عن عرض الحاوية */
+    height: auto;                                        /* الحفاظ على النسبة */
+}
+
+/* المحتوى الرئيسي: بيدفع الفوتر لآخر الصفحة */
+.site-main {
+    flex: 1 0 auto;                                      /* ياخد المساحة الفاضية ولا ينكمش */
+}
+
+
+/* ==========================================================================
+   3) الهيدر
+   ========================================================================== */
+
+/* الحاوية الزجاجية الثابتة أعلى الصفحة */
+.site-header {
+    position: fixed;                                     /* ثابت أعلى الشاشة */
+    inset-block-start: 8px;                              /* مسافة 8px من الحافة العلوية */
+    inset-inline: 0;                                     /* ممتد أفقيًا عشان margin:auto يوسّطه */
+    z-index: 9999;                                       /* فوق كل العناصر */
+    width: min(97%, 622px);                              /* موبايل: 97% من العرض، وأقصى عرض 622px */
+    height: 64px;                                        /* موبايل (الأساس): ارتفاع 64px */
+    margin-inline: auto;                                 /* توسيط أفقي */
+    padding: 8px;                                        /* موبايل: حشو 8px */
+    display: grid;                                       /* شبكة للأزرار */
+    grid-template-columns: repeat(4, 1fr);               /* 4 أزرار بنفس العرض */
+    gap: 4px;                                            /* موبايل: مسافة 4px بين الأزرار */
+    background: var(--glass-bg);                         /* خلفية زجاجية */
+    border: var(--glass-border);                         /* حدود زجاجية */
+    backdrop-filter: var(--glass-blur);                  /* تغبيش اللي ورا الهيدر */
+    border-radius: 70px;                                 /* حواف دائرية بالكامل */
+    animation: header-slide-down .8s var(--ease-out) var(--intro-delay) both; /* ينزل من فوق عند فتح الصفحة */
+}
+
+/* زر الهيدر (أيقونة + نص) */
+.site-header__button {
+    --accent: #888;                                      /* لون الزر الافتراضي (كل زر بيغيّره تحت) */
+    position: relative;                                  /* مرجع لتعبئة اللون */
+    display: inline-flex;                                /* ترتيب مرن */
+    flex-direction: column;                              /* موبايل (الأساس): الأيقونة فوق النص */
+    align-items: center;                                 /* توسيط أفقي */
+    justify-content: center;                             /* توسيط رأسي */
+    gap: 1px;                                            /* موبايل: مسافة 1px بين الأيقونة والنص */
+    min-width: 0;                                        /* يسمح بالانكماش داخل الشبكة */
+    margin: 0;                                           /* بدون هامش */
+    padding: 3px 2px;                                    /* موبايل: حشو صغير */
+    font-size: 11px;                                     /* موبايل: خط 11px */
+    color: white;                                        /* لون النص */
+    background: rgba(255, 255, 255, .26);                /* خلفية الزر */
+    border: 1px solid rgba(255, 255, 255, .363);         /* حدود الزر */
+    border-radius: 22px;                                 /* موبايل: حواف 22px */
+    cursor: pointer;                                     /* مؤشر اليد */
+    overflow: hidden;                                    /* قص تعبئة اللون داخل الزر */
+    z-index: 0;                                          /* طبقة محلية للتعبئة */
+    transition: transform .3s ease, box-shadow .3s ease, color .3s ease; /* حركة الهوفر */
+    animation: button-slide-down .8s var(--ease-out) backwards; /* ينزل بعد الهيدر (backwards عشان الهوفر يشتغل بعد الانتهاء) */
+}
+
+/* ألوان أزرار الهيدر */
+.site-header__button--home { --accent: #3b82f6; }        /* الرئيسية: أزرق */
+.site-header__button--courses { --accent: #10b981; }     /* الكورسات: أخضر */
+.site-header__button--author { --accent: #8b5cf6; }      /* Abo Shaheen (المشروع المرجعي): بنفسجي */
+.site-header__button--author .site-header__label { white-space: nowrap; } /* الاسم في سطر واحد */
+.site-header__button--contact { --accent: #f59e0b; }     /* تواصل معي: برتقالي */
+
+/* تعبئة اللون من فوق لتحت عند الهوفر */
+.site-header__button::before {
+    content: "";                                         /* عنصر وهمي للتعبئة */
+    position: absolute;                                  /* فوق الزر */
+    inset: 0;                                            /* يغطي الزر كله */
+    background: var(--accent);                           /* لون الزر */
+    transform: translateY(-101%);                        /* مخفي فوق الزر */
+    transition: transform .35s ease;                     /* نزول ناعم */
+    z-index: -1;                                         /* خلف النص والأيقونة */
+}
+
+/* أيقونة زر الهيدر */
+.site-header__icon {
+    font-size: 16px;                                     /* موبايل: أيقونة 16px */
+    color: var(--accent);                                /* بلون الزر */
+    transition: transform .4s cubic-bezier(.34, 1.56, .64, 1), color .3s ease; /* ارتداد خفيف عند الهوفر */
+}
+
+/* الهوفر: الزر ينزل شوية ويتلون */
+.site-header__button:hover {
+    transform: translateY(3px);                          /* ينزل 3px */
+    color: #fff;                                         /* نص أبيض */
+    box-shadow: 0 6px 18px color-mix(in srgb, var(--accent) 50%, transparent); /* ظل بلون الزر */
+}
+
+/* الهوفر: التعبئة تنزل لمكانها */
+.site-header__button:hover::before {
+    transform: translateY(0);                            /* التعبئة تغطي الزر */
+}
+
+/* الهوفر: الأيقونة تكبر وتلف */
+.site-header__button:hover .site-header__icon {
+    color: #fff;                                         /* أيقونة بيضاء */
+    transform: scale(1.25) rotate(12deg);                /* تكبير + دوران خفيف */
+}
+
+/* الضغط على الزر */
+.site-header__button:active {
+    transform: translateY(1px) scale(.97);               /* انضغاط بسيط */
+}
+
+/* نزول الأزرار بالتتابع بعد الهيدر */
+.site-header__button:nth-child(1) { animation-delay: calc(var(--intro-delay) + .25s); } /* الزر الأول */
+.site-header__button:nth-child(2) { animation-delay: calc(var(--intro-delay) + .33s); } /* الزر التاني */
+.site-header__button:nth-child(3) { animation-delay: calc(var(--intro-delay) + .41s); } /* الزر التالت */
+.site-header__button:nth-child(4) { animation-delay: calc(var(--intro-delay) + .49s); } /* الزر الرابع */
+
+
+/* ==========================================================================
+   4) البطاقة التعريفية (Hero)
+   ========================================================================== */
+
+/* الحاوية: الصورة فوق والاسم والوصف تحتها (موبايل وتابلت بالطول) */
+.hero {
+    /* قيم التقدّم مع السكرول (0 → 1) بيحدّثها script.js */
+    --subtitle-progress: 0;                              /* اختفاء الوصف */
+    --title-progress: 0;                                 /* اختفاء العنوان */
+    --portrait-progress: 0;                              /* اختفاء الدائرة والصورة */
+    --icons-retract: 0;                                  /* رجوع الأيقونات للدائرة */
+    --icons-fade: 0;                                     /* اختفاء الأيقونات */
+
+    position: sticky;                                    /* الهيرو يفضل ثابت والمحتوى يطلع فوقه */
+    top: 0;                                              /* ثابت عند أعلى الشاشة */
+    margin-bottom: calc(-1 * var(--hero-hold));          /* يمدّد مدى التثبيت (التعويض في .hero-sticky-extension عشان التخطيط يفضل زي ما هو) */
+    z-index: 1;                                          /* تحت المحتوى (z-index:2) */
+    pointer-events: none;                                /* ما يمنعش الضغط على اللي فوقه */
+
+    display: flex;                                       /* ترتيب مرن */
+    flex-direction: column;                              /* موبايل: العناصر تحت بعض */
+    align-items: center;                                 /* توسيط أفقي */
+    justify-content: start;                              /* البداية من فوق */
+    min-height: 100vh;                                   /* ارتفاع الشاشة كاملًا (احتياطي) */
+    min-height: 100svh;                                  /* ارتفاع الشاشة الثابت على الموبايل */
+    overflow-x: clip;                                    /* الهالة الواسعة ما تعملش سكرول أفقي */
+    padding: calc(92px + 135 * var(--unit)) 16px 16px;   /* فوق: مكان الهيدر + مكان طلوع الأيقونات فوق الدائرة */
+    text-align: center;                                  /* موبايل: النص في المنتصف */
+}
+
+/* مسافة تمديد تثبيت الهيرو: الهيرو بيتثبت لحد ما السكرول يعدّي طول المحتوى + المسافة دي،
+   فالصورة بتفضل في مكانها وهي بتتبلور وتصغر لحد ما تختفي بدل ما تتشال لفوق مع نهاية القسم */
+:root {
+    --hero-hold: 90vh;                                   /* احتياطي للمتصفحات القديمة */
+    --hero-hold: 90svh;                                  /* نفس مسافة اختفاء الهيرو تقريبًا */
+}
+
+.hero-sticky-extension {
+    height: var(--hero-hold);                            /* بيعوّض الهامش السالب في .hero (صافي التخطيط = صفر) */
+    pointer-events: none;                                /* ما يمنعش الضغط */
+}
+
+/* الدائرة اللي فيها الشخص */
+.hero__portrait {
+    order: 1;                                            /* موبايل: الدائرة أول عنصر */
+    position: relative;                                  /* مرجع للأيقونات والهالة */
+    display: grid;                                       /* شبكة لتثبيت الصورة في الأسفل */
+    justify-content: start;                              /* محاذاة أفقية */
+    align-content: end;                                  /* الصورة ملزوقة في أسفل الدائرة */
+    box-sizing: content-box;                             /* عشان قطر الدائرة = المقاس المحسوب بالضبط */
+    width: calc(450 * var(--unit));                      /* قطر الدائرة بوحدة التناسب */
+    height: calc(450 * var(--unit));                     /* نفس العرض = دائرة */
+    margin: 0 auto 36px;                                 /* موبايل: توسيط + 36px تحتها */
+    border: 5px solid transparent;                       /* مكان الحدود (شكلها مرسوم في ::after عشان تتضبب لوحدها) */
+    border-radius: 50%; 
+    backdrop-filter: blur(5px);                                 /* شكل دائري */
+    opacity: 0;                                          /* مخفية قبل أنيميشن الدخول */
+    animation: portrait-rise 1s calc(1s + var(--intro-delay)) forwards; /* تظهر وتطلع لفوق */
+    transform-origin: 50% 55%;                           /* مركز التصغير مع السكرول */
+    scale: calc(1 - .5 * var(--portrait-progress));      /* تصغر مع السكرول */
+    --portrait-fx: blur(calc(var(--portrait-progress) * 16px)) opacity(calc(1 - var(--portrait-progress))); /* تتبلور وتختفي مع السكرول (بتتطبق على اللي جواها واحد واحد مش على الدائرة نفسها، عشان زجاج الدائرة يشوف المجرة اللي وراها) */
+    will-change: scale;                                  /* تحسين الأداء للحركة */
+}
+
+/* زجاج الدائرة (الخلفية + الحدود): بيغبّش اللي وراه (المجرة والسدم والنجوم) والصورة والأيقونات تفضل واضحة */
+.hero__portrait::after {
+    --circle-blur: 14px;                                 /* درجة تغبيش اللي ورا الدائرة: زوّدها أو قلّلها من هنا */
+    content: "";                                         /* عنصر وهمي للدائرة */
+    position: absolute;                                  /* داخل الدائرة */
+    inset: -5px;                                         /* يغطي مكان الحدود بالظبط */
+    z-index: -1;                                         /* خلف الصورة والأيقونات والهالة */
+    box-sizing: border-box;                              /* الحدود جوه المقاس */
+    border: 5px solid rgba(255, 255, 255, .288);         /* حدود الدائرة */
+    border-radius: 50%;                                  /* شكل دائري */
+    background: rgba(255, 255, 255, 0);               /* لون الدائرة الشفاف */
+    -webkit-backdrop-filter: blur(var(--circle-blur));   /* تغبيش اللي ورا الدائرة (سفاري) */
+    backdrop-filter: blur(var(--circle-blur));           /* تغبيش اللي ورا الدائرة */
+    opacity: calc(1 - var(--portrait-progress));         /* تختفي مع السكرول */
+    pointer-events: none;                                /* ما تمنعش الضغط */
+}
+
+/* هالة بيضاء ناعمة منبعثة من خلف الشخصية */
+.hero__portrait::before {
+    content: "";                                         /* عنصر وهمي للهالة */
+    position: absolute;                                  /* داخل الدائرة */
+    left: 50%;                                           /* منتصف أفقي */
+    top: 46%;                                            /* أعلى شوية من المنتصف */
+    z-index: 0;                                          /* خلف الصورة */
+    width: 260%;                                         /* هالة أكبر من الدائرة بكتير */
+    aspect-ratio: 1;                                     /* مربع = دائرة بعد الـ radius */
+    translate: -50% -50%;                                /* توسيط تام */
+    border-radius: 50%;                                  /* شكل دائري */
+    pointer-events: none;                                /* ما تمنعش الضغط */
+    background: radial-gradient(closest-side,
+        rgba(255, 255, 255, .34) 0%,
+        rgba(255, 255, 255, .26) 18%,
+        rgba(255, 255, 255, .16) 38%,
+        rgba(255, 255, 255, .08) 58%,
+        rgba(255, 255, 255, .03) 78%,
+        rgba(255, 255, 255, 0) 100%);                    /* تدرج إشعاعي بيتلاشى للأطراف */
+    opacity: 0;                                          /* مخفية قبل الدخول */
+    animation:
+        glow-in 1.4s calc(1s + var(--intro-delay)) ease forwards,
+        glow-pulse 6s ease-in-out calc(2.4s + var(--intro-delay)) infinite alternate; /* ظهور ثم نبض مستمر */
+    filter: opacity(calc(1 - var(--portrait-progress))); /* تختفي مع السكرول */
+}
+
+/* الصورة كخلفية CSS (مش <img>) عشان جوجل ما يختارهاش كصورة مصغّرة جنب الرابط */
+.hero__glow,
+.hero__photo {
+    display: block;                                      /* عنصر عادي بدل img */
+    aspect-ratio: 900 / 1105;                            /* نفس نسبة الصورة الأصلية */
+    background: url("img/me2.webp") center / 100% 100% no-repeat; /* صورة الشخص */
+}
+
+/* نسخة بيضاء مبلورة من الشخصية: توهج يتبع حدود الجسم */
+.hero__glow {
+    position: absolute;                                  /* فوق الدائرة */
+    left: 50%;                                           /* منتصف أفقي */
+    bottom: 0;                                           /* ملزوقة في أسفل الدائرة */
+    z-index: 1;                                          /* تحت الصورة الأصلية */
+    width: calc(450 * var(--unit));                      /* نفس عرض الصورة */
+    margin-left: calc(-225 * var(--unit));               /* نص العرض لتوسيطها */
+    border-radius: 0 0 calc(270 * var(--unit)) calc(270 * var(--unit)); /* حواف سفلية دائرية */
+    pointer-events: none;                                /* ما تمنعش الضغط */
+    filter: brightness(0) invert(1) blur(calc(46 * var(--unit))) var(--portrait-fx); /* أبيض + تغبيش + تبلور واختفاء مع السكرول */
+    --glow-opacity: .3;                                  /* الشفافية النهائية للتوهج */
+    opacity: 0;                                          /* مخفية قبل الدخول */
+    animation: glow-in 1.4s calc(1s + var(--intro-delay)) ease forwards; /* تظهر بنعومة */
+    transform-origin: 50% 100%;                          /* التصغير من أسفل */
+    scale: calc(1 - .12 * var(--portrait-progress));     /* تصغر مع السكرول */
+    translate: 0 calc(var(--portrait-progress) * 18 * var(--unit)); /* تنزل جوه الدائرة مع السكرول */
+}
+
+/* صورة الشخص */
+.hero__photo {
+    position: relative;                                  /* فوق التوهج */
+    z-index: 2;                                          /* أعلى طبقة داخل الدائرة */
+    width: calc(450 * var(--unit));                      /* عرض الصورة بوحدة التناسب */
+    border-radius: 0 0 calc(270 * var(--unit)) calc(270 * var(--unit)); /* حواف سفلية دائرية */
+    opacity: 0;                                          /* مخفية قبل الدخول */
+    animation: fade-in 1s calc(1s + var(--intro-delay)) forwards; /* تظهر بنعومة */
+    transform-origin: 50% 100%;                          /* التصغير من أسفل */
+    scale: calc(1 - .12 * var(--portrait-progress));     /* تصغر مع السكرول */
+    translate: 0 calc(var(--portrait-progress) * 18 * var(--unit)); /* تغوص جوه الدائرة */
+    filter: blur(calc(var(--portrait-progress) * 6px)) var(--portrait-fx); /* تتبلور وتختفي مع السكرول */
+    will-change: scale, translate, filter;               /* تحسين الأداء للحركة */
+}
+
+/* اسم المطور */
+.hero__title {
+    --slide-from: 60px;                                  /* مسافة الدخول الجانبي */
+    order: 2;                                            /* موبايل: تحت الدائرة */
+    position: relative;                                  /* عشان right / top يشتغلوا */
+    right: 0;                                            /* بدون إزاحة (الإزاحة في الشاشات العريضة) */
+    z-index: 3;                                          /* فوق الدائرة */
+    margin: 0 0 8px;                                     /* موبايل: 8px تحته */
+    font-family: var(--font-brand);                      /* خط الشعار */
+    font-size: clamp(24px, 6vw, 40px);                   /* موبايل: حجم مرن من 24 لـ 40px */
+    line-height: 1.25;                                   /* ارتفاع السطر */
+    opacity: 0;                                          /* مخفي قبل الدخول */
+    animation: slide-in .7s calc(1s + var(--intro-delay)) forwards; /* يدخل من الجنب */
+    padding-bottom: 40px;                                /* مسافة تحت الاسم قبل الوصف */
+    transform-origin: 50% 50%;                           /* مركز التصغير */
+    scale: calc(1 - .45 * var(--title-progress));        /* يصغر مع السكرول */
+    filter: blur(calc(var(--title-progress) * 10px)) opacity(calc(1 - var(--title-progress))); /* يتبلور ويختفي */
+    will-change: scale, filter;                          /* تحسين الأداء للحركة */
+}
+
+/* الوصف تحت الاسم */
+.hero__subtitle {
+    --slide-from: 100px;                                 /* مسافة الدخول الجانبي */
+    order: 3;                                            /* موبايل: آخر عنصر */
+    position: relative;                                  /* عشان right / top يشتغلوا */
+    right: 0;                                            /* بدون إزاحة (الإزاحة في الشاشات العريضة) */
+    z-index: 3;                                          /* فوق الدائرة */
+    max-width: 100%;                                     /* ما يتعداش عرض الشاشة */
+    margin: 0;                                           /* بدون هامش */
+    font-size: clamp(14px, 3.8vw, 22px);                 /* موبايل: حجم مرن من 14 لـ 22px */
+    font-weight: 700;                                    /* خط عريض */
+    line-height: 1.6;                                    /* ارتفاع السطر */
+    text-wrap: balance;                                  /* توزيع متوازن للأسطر */
+    opacity: 0;                                          /* مخفي قبل الدخول */
+    animation: slide-in .7s calc(1.1s + var(--intro-delay)) forwards; /* يدخل من الجنب */
+    transform-origin: 50% 50%;                           /* مركز التصغير */
+    scale: calc(1 - .45 * var(--subtitle-progress));     /* يصغر مع السكرول */
+    filter: blur(calc(var(--subtitle-progress) * 10px)) opacity(calc(1 - var(--subtitle-progress))); /* يتبلور ويختفي */
+    will-change: scale, filter;                          /* تحسين الأداء للحركة */
+}
+
+/* غلاف الوصف + الأزرار: في الموبايل بيختفي كحاوية (الترتيب بالـ order)، وفي الشاشات العريضة بيبقى عمود */
+.hero__lower {
+    display: contents;                                   /* موبايل: الوصف والأزرار عناصر مباشرة في الهيرو */
+}
+
+/* أزرار إنشاء حساب / تسجيل الدخول (زجاجية، روابط لصفحة Login.html)
+   ملحوظة: الحاوية نفسها من غير filter / opacity / will-change عشان تغبيش الزجاج (backdrop-filter) يشوف الخلفية.
+   حركة الدخول وتأثير السكرول بيتطبقوا على كل زر لوحده. */
+.hero__actions {
+    order: 4;                                            /* موبايل: تحت الوصف */
+    position: relative;                                  /* عشان right / top يشتغلوا */
+    right: 0;                                            /* بدون إزاحة (الإزاحة في الشاشات العريضة) */
+    z-index: 3;                                          /* فوق الدائرة */
+    display: flex;                                       /* الزرين جنب بعض */
+    flex-wrap: wrap;                                     /* لو العرض ضيق ينزلوا تحت بعض */
+    justify-content: center;                             /* موبايل: في المنتصف */
+    gap: 10px;                                           /* مسافة بين الزرين */
+    margin-top: 18px;                                    /* مسافة تحت الوصف */
+}
+
+/* الزر الزجاجي (بنفس تنسيقات زجاج الهيدر والفوتر) */
+.glass-button {
+    display: inline-flex;                                /* أيقونة + نص */
+    align-items: center;                                 /* توسيط رأسي */
+    justify-content: center;                             /* توسيط أفقي */
+    gap: 8px;                                            /* مسافة بين الأيقونة والنص */
+    min-width: 132px;                                    /* عرض أدنى متساوي للزرين */
+    padding: 10px 18px;                                  /* حشو داخلي */
+    font-size: clamp(14px, 3.6vw, 17px);                 /* خط مرن */
+    font-weight: 600;                                    /* سُمك الخط */
+    color: #fff;                                         /* لون النص */
+    background: var(--glass-bg);                         /* خلفية زجاجية */
+    border: var(--glass-border);                         /* حدود زجاجية */
+    -webkit-backdrop-filter: var(--glass-blur);          /* تغبيش (سفاري) */
+    backdrop-filter: var(--glass-blur);                  /* تغبيش اللي ورا الزر */
+    border-radius: 40px;                                 /* حواف دائرية بالكامل */
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .18);  /* لمعة زجاج خفيفة من فوق */
+    --slide-from: 100px;                                 /* مسافة الدخول الجانبي */
+    text-decoration: none;                               /* رابط بشكل زر: بدون خط تحت */
+    pointer-events: auto;                                /* قابل للضغط (الهيرو نفسه pointer-events: none) */
+    cursor: pointer;                                     /* مؤشر اليد */
+    opacity: 0;                                          /* مخفي قبل الدخول */
+    animation: glass-button-in .7s calc(1.2s + var(--intro-delay)) forwards; /* يدخل من الجنب بعد الوصف */
+    transform-origin: 50% 50%;                           /* مركز التصغير */
+    scale: calc(1 - .45 * var(--subtitle-progress));     /* يصغر مع السكرول (زي الوصف) */
+    transition: background-color var(--theme-duration) ease, color var(--theme-duration) ease,
+                border-color var(--theme-duration) ease, translate .3s ease, box-shadow .3s ease; /* تبديل الثيم + الهوفر */
+}
+
+.glass-button:nth-child(2) {
+    animation-delay: calc(1.3s + var(--intro-delay));    /* الزر التاني بعد الأول بشوية */
+}
+
+/* الهوفر: الزر يرتفع شوية ويلمع (بـ translate عشان أنيميشن الدخول ما يتعارضش) */
+html:not(.no-effects) .glass-button:hover {
+    translate: 0 -3px;                                   /* يرتفع 3px */
+    background: rgba(255, 255, 255, .14);                /* زجاج أوضح */
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), 0 8px 22px rgba(80, 140, 255, .35); /* لمعة + توهج أزرق */
+}
+
+/* الضغط على الزر */
+.glass-button:active {
+    translate: 0 -1px;                                   /* انضغاط بسيط */
+}
+
+/* حلقة التركيز للكيبورد */
+.glass-button:focus-visible {
+    outline: 2px solid #7b9cff;                          /* إطار واضح */
+    outline-offset: 3px;                                 /* بعيد عن الحافة */
+}
+
+.glass-button__icon {
+    font-size: .95em;                                    /* أيقونة بحجم النص تقريبًا */
+}
+
+/* بعد ما الهيرو يختفي تمامًا: نوقف رسمه */
+.hero.is-gone {
+    visibility: hidden;                                  /* إخفاء كامل لتوفير الأداء */
+}
+
+
+/* ---------- أيقونات التقنيات العائمة حول الشخص ---------- */
+
+/* قائمة الأيقونات */
+.tech-icons {
+    position: absolute;                                  /* بنفس مساحة الدائرة (الأيقونات بتتوضع بالنسبة لها) */
+    inset: 0;                                            /* يغطي الدائرة بالظبط */
+    z-index: 2;                                          /* نفس ترتيب الأيقونات قبل كده */
+    margin: 0;                                           /* بدون هامش */
+    padding: 0;                                          /* بدون حشو */
+    list-style: none;                                    /* إخفاء النقاط */
+    filter: var(--portrait-fx);                          /* تتبلور وتختفي مع السكرول */
+}
+
+/* الأيقونة الواحدة (مواضعها الخاصة في الكلاسات الملونة تحت) */
+.tech-icon {
+    --entrance-duration: 2.6s;                           /* مدة الظهور (بطيئة) */
+    --entrance-delay: calc(1.3s + var(--intro-delay));   /* بداية الظهور: نفس الوقت للكل */
+    position: absolute;                                  /* داخل الدائرة */
+    left: 50%;                                           /* تبدأ من المنتصف */
+    top: 50%;                                            /* تبدأ من المنتصف */
+    z-index: 2;                                          /* فوق الدائرة */
+    width: calc(var(--size) * var(--unit));              /* عرض الأيقونة بوحدة التناسب */
+    height: calc(var(--size) * var(--unit));             /* ارتفاع الأيقونة بوحدة التناسب */
+    margin: calc(var(--size) * var(--unit) / -2) 0 0 calc(var(--size) * var(--unit) / -2); /* توسيط تام على المنتصف */
+    opacity: 0;                                          /* مخفية قبل الدخول */
+    animation: tech-emerge var(--entrance-duration) cubic-bezier(.25, .8, .25, 1) var(--entrance-delay) forwards; /* تخرج من الشخص لمكانها */
+    translate: calc(var(--to-x) * var(--unit) * -1 * var(--icons-retract))
+               calc(var(--to-y) * var(--unit) * -1 * var(--icons-retract)); /* ترجع للمركز مع السكرول */
+    scale: calc(1 - .6 * var(--icons-retract));          /* وتصغر مع السكرول */
+}
+
+/* ضبابية في الأول وبعدين وضوح */
+.tech-icon__entrance {
+    display: block;                                      /* يملأ الأيقونة */
+    width: 100%;                                         /* عرض كامل */
+    height: 100%;                                        /* ارتفاع كامل */
+    animation: tech-focus var(--entrance-duration) cubic-bezier(.25, .8, .25, 1) var(--entrance-delay) backwards; /* من ضبابي لواضح */
+}
+
+/* حركة عائمة دايمة تبدأ بعد انتهاء الظهور */
+.tech-icon__floating {
+    display: block;                                      /* يملأ الأيقونة */
+    width: 100%;                                         /* عرض كامل */
+    height: 100%;                                        /* ارتفاع كامل */
+    animation: tech-float var(--float-duration) ease-in-out calc(var(--entrance-delay) + var(--entrance-duration)) infinite alternate; /* طفو مستمر */
+    opacity: calc(1 - var(--icons-fade));                /* اختفاء بالشفافية فقط مع السكرول */
+}
+
+/* صورة الأيقونة */
+.tech-icon__image {
+    display: block;                                      /* إزالة فراغ السطر */
+    width: 100%;                                         /* عرض كامل */
+    height: 100%;                                        /* ارتفاع كامل */
+    filter:
+        drop-shadow(0 6px 12px color-mix(in srgb, var(--accent) 70%, transparent))
+        drop-shadow(0 0 10px color-mix(in srgb, var(--accent) 45%, transparent)); /* ظل وتوهج بلون الأيقونة */
+}
+
+/* حواف ناعمة لشعارات JS و TS */
+.tech-icon__image--rounded {
+    border-radius: 18%;                                  /* تدوير الحواف */
+}
+
+/* مواضع وألوان كل أيقونة: --from = نقطة البداية داخل الدائرة | --to = المكان النهائي | --size = الحجم | --float-* = حركة الطفو */
+.tech-icon--react {
+    --from-x: -163; --from-y: -97;                       /* بداية React */
+    --to-x: -248; --to-y: -148;                          /* نهاية React */
+    --size: 58;                                          /* حجم React */
+    --accent: #61dafb;                                   /* لون توهج React */
+    --float-y: 7; --float-x: 3; --float-rotation: 2deg; --float-duration: 5.6s; /* طفو React */
+}
+
+.tech-icon--nodejs {
+    --from-x: -102; --from-y: -160;                      /* بداية Node.js */
+    --to-x: -150; --to-y: -235;                          /* نهاية Node.js */
+    --size: 46;                                          /* حجم Node.js */
+    --accent: #6cc24a;                                   /* لون توهج Node.js */
+    --float-y: 6; --float-x: -3; --float-rotation: -2deg; --float-duration: 6.4s; /* طفو Node.js */
+}
+
+.tech-icon--git {
+    --from-x: 96; --from-y: -164;                        /* بداية Git */
+    --to-x: 135; --to-y: -230;                           /* نهاية Git */
+    --size: 46;                                          /* حجم Git */
+    --accent: #f1502f;                                   /* لون توهج Git */
+    --float-y: 6; --float-x: 3; --float-rotation: 2deg; --float-duration: 5.8s; /* طفو Git */
+}
+
+.tech-icon--html {
+    --from-x: 166; --from-y: -93;                        /* بداية HTML */
+    --to-x: 235; --to-y: -132;                           /* نهاية HTML */
+    --size: 56;                                          /* حجم HTML */
+    --accent: #e44d26;                                   /* لون توهج HTML */
+    --float-y: 7; --float-x: -3; --float-rotation: -2deg; --float-duration: 6.6s; /* طفو HTML */
+}
+
+.tech-icon--javascript {
+    --from-x: -187; --from-y: -31;                       /* بداية JavaScript */
+    --to-x: -270; --to-y: -45;                           /* نهاية JavaScript */
+    --size: 50;                                          /* حجم JavaScript */
+    --accent: #f7df1e;                                   /* لون توهج JavaScript */
+    --float-y: 6; --float-x: 3; --float-rotation: 2deg; --float-duration: 5.2s; /* طفو JavaScript */
+}
+
+.tech-icon--typescript {
+    --from-x: 189; --from-y: 14;                         /* بداية TypeScript */
+    --to-x: 272; --to-y: 20;                             /* نهاية TypeScript */
+    --size: 50;                                          /* حجم TypeScript */
+    --accent: #3178c6;                                   /* لون توهج TypeScript */
+    --float-y: 6; --float-x: -3; --float-rotation: 2deg; --float-duration: 6.2s; /* طفو TypeScript */
+}
+
+.tech-icon--python {
+    --from-x: -175; --from-y: 75;                        /* بداية Python */
+    --to-x: -245; --to-y: 105;                           /* نهاية Python */
+    --size: 56;                                          /* حجم Python */
+    --accent: #4b8bbe;                                   /* لون توهج Python */
+    --float-y: 7; --float-x: 3; --float-rotation: -2deg; --float-duration: 5.9s; /* طفو Python */
+}
+
+.tech-icon--css {
+    --from-x: 154; --from-y: 111;                        /* بداية CSS */
+    --to-x: 215; --to-y: 155;                            /* نهاية CSS */
+    --size: 54;                                          /* حجم CSS */
+    --accent: #2d79f3;                                   /* لون توهج CSS */
+    --float-y: 6; --float-x: -3; --float-rotation: 2deg; --float-duration: 5.5s; /* طفو CSS */
+}
+
+
+/* ==========================================================================
+   5) الأقسام (ماذا نقدم؟ / بطاقات الكورسات) + السلايدر
+   ========================================================================== */
+
+/* حاوية كل الأقسام: بتطلع فوق الهيرو */
+.site-main__content {
+    display: grid;                                       /* الأقسام تحت بعض */
+    gap: var(--section-gap);                             /* مسافة رأسية بين الأقسام */
+    width: min(100% - 2 * clamp(.75rem, 3vw, 2.5rem), 1900px); /* عرض مرن بهامش جانبي من 12 لـ 40px وأقصى عرض 1900px */
+    margin-inline: auto;                                 /* توسيط أفقي */
+    padding-block: 90px 3rem;                            /* 90px فوق (مكان عنوان القسم) و 3rem تحت */
+    position: relative;                                  /* عشان z-index يشتغل */
+    z-index: 2;                                          /* المحتوى يطلع فوق الهيرو */
+}
+
+/* القسم الواحد (الكورسات). عرضه من المتغير المشترك --section-width */
+.section {
+    position: relative;                                  /* مرجع لعنوان القسم العائم */
+    min-width: 0;                                        /* يسمح بالانكماش داخل الشبكة */
+    width: var(--section-width);                         /* نفس عرض المشاريع بالظبط */
+    margin-inline: auto;                                 /* توسيط أفقي = نفس مسافة حدود المتصفح */
+}
+
+/* العنوان الزجاجي العائم فوق البطاقة */
+.section__badge {
+    position: absolute;                                  /* عائم فوق البطاقة */
+    top: -70px;                                          /* نص العنوان خارج البطاقة */
+    left: 50%;                                           /* منتصف أفقي */
+    z-index: -1;                                         /* خلف البطاقة */
+    translate: -50% 0;                                   /* توسيط تام */
+    width: max-content;                                  /* على قد المحتوى */
+    min-width: 122px;                                    /* أقل عرض */
+    min-height: 102px;                                   /* أقل ارتفاع */
+    margin: 0;                                           /* بدون هامش */
+    padding: 10px;                                       /* حشو داخلي */
+    display: grid;                                       /* لتوسيط النص */
+    background: var(--glass-bg);                         /* خلفية زجاجية */
+    border: var(--glass-border);                         /* حدود زجاجية */
+    backdrop-filter: var(--glass-blur);                  /* تغبيش */
+    border-radius: 30px;                                 /* حواف دائرية */
+    font-weight: 400;                                    /* خط عادي */
+}
+
+/* نص العنوان */
+.section__badge-label {
+    display: grid;                                       /* لتوسيط النص */
+    place-items: center;                                 /* توسيط أفقي ورأسي */
+    padding: 0 .6rem;                                    /* حشو جانبي */
+    font-size: 27px;                                     /* حجم الخط */
+    color: black;                                        /* لون النص */
+    background: var(--surface-panel);                    /* خلفية فاتحة */
+    border-radius: 20px;                                 /* حواف دائرية */
+}
+
+/* البطاقة الزجاجية الكبيرة */
+.section__card {
+    display: grid;                                       /* شبكة لمحتوى البطاقة */
+    grid-template-columns: minmax(0, 1fr);               /* عمود واحد يقدر ينكمش (مهم عشان السلايدر ما يوسّعش البطاقة) */
+    margin-inline: auto;                                 /* توسيط */
+    background: var(--glass-bg);                         /* خلفية زجاجية */
+    border: var(--glass-border);                         /* حدود زجاجية */
+    backdrop-filter: var(--glass-blur);                  /* تغبيش */
+    border-radius: 50px;                                 /* حواف دائرية كبيرة */
+}
+
+/* أنواع البطاقة (نفس الحشو والعرض) */
+.section__card--projects {
+    width: 100%;                                         /* عرض كامل */
+    padding: 12px;                                       /* حشو داخلي */
+}
+
+/* ---------- سلايدر المشاريع ---------- */
+
+/* الغلاف: بيحمل الأسهم الجانبية */
+.projects-slider {
+    --cards-visible: 1;                                  /* موبايل (الأساس): مشروع واحد ظاهر */
+    --slider-gap: 10px;                                  /* المسافة بين البطاقات */
+    position: relative;                                  /* مرجع للأسهم */
+    min-width: 0;                                        /* يسمح بالانكماش جوه البطاقة بدل ما يوسّعها */
+    padding: 10px;                                       /* حشو داخلي زي باقي الأقسام */
+}
+
+/* منطقة العرض: بتخفي المشاريع الزايدة وتسمح بالتمرير الجانبي */
+.projects-slider__viewport {
+    min-width: 0;                                        /* يسمح بالانكماش (المحتوى الزايد يتمرر مش يوسّع) */
+    overflow-x: auto;                                    /* تمرير أفقي */
+    overflow-y: hidden;                                  /* بدون تمرير رأسي */
+    padding-block: 12px;                                 /* مساحة لارتفاع البطاقة عند الهوفر عشان ما تتقصش */
+    margin-block: -12px;                                 /* نلغي أثر المساحة دي على التخطيط */
+    scroll-snap-type: x mandatory;                       /* التمرير يقف عند بداية بطاقة بالظبط */
+    overscroll-behavior-x: contain;                      /* ما يرجّعش الصفحة السابقة بالسحب */
+    scrollbar-width: none;                               /* إخفاء الشريط في Firefox */
+    -ms-overflow-style: none;                            /* إخفاء الشريط في Edge القديم */
+}
+
+/* إخفاء شريط التمرير في Chrome / Safari */
+.projects-slider__viewport::-webkit-scrollbar {
+    display: none;                                       /* إخفاء الشريط */
+}
+
+/* حلقة التركيز للكيبورد */
+.projects-slider__viewport:focus-visible {
+    outline: 2px solid #7b9cff;                          /* إطار واضح */
+    outline-offset: 2px;                                 /* بعيد شوية عن الحافة */
+    border-radius: 30px;                                 /* يماشي حواف البطاقات */
+}
+
+/* الصف المرن اللي بتترص فيه البطاقات جنب بعض */
+.projects-slider__track {
+    --card-width: calc((100% - (var(--cards-visible) - 1) * var(--slider-gap)) / var(--cards-visible)); /* عرض البطاقة = ثابت مهما زاد عدد المشاريع */
+    display: flex;                                       /* البطاقات جنب بعض */
+    gap: var(--slider-gap);                              /* المسافة بين البطاقات */
+    width: 100%;                                         /* عرض منطقة العرض */
+}
+
+/* أسهم التمرير: مربعات زجاجية بيضاء نص جسمها ورا حاوية المشاريع (زي عنوان القسم)
+   (موجودة جوه .section مش جوه السلايدر عشان تقدر تروح ورا البطاقة الزجاجية) */
+.projects-slider__arrow {
+    --arrow-size: 58px;                                  /* حجم المربع */
+    --arrow-peek: min(34px, 7.4vw);                      /* الجزء البارز بره البطاقة */
+    position: absolute;                                  /* على حافة القسم */
+    top: 50%;                                            /* منتصف ارتفاع البطاقة */
+    z-index: -1;                                         /* خلف البطاقة الزجاجية */
+    display: none;                                       /* مخفية لحد ما يبقى فيه مشاريع مخفية */
+    place-items: center;                                 /* توسيط السهم */
+    width: var(--arrow-size);                            /* مربع */
+    height: var(--arrow-size);                           /* مربع */
+    margin-top: calc(var(--arrow-size) / -2);            /* توسيط رأسي تام */
+    padding: 0;                                          /* بدون حشو */
+    font-size: 19px;                                     /* حجم السهم */
+    color: #000;                                         /* سهم أسود */
+    background: rgba(255, 255, 255, .7);                 /* أبيض زجاجي */
+    box-shadow: 0 4px 18px rgba(255, 255, 255, .25);     /* توهج خفيف يبرزه */
+    border: var(--glass-border);                         /* حدود زجاجية */
+    backdrop-filter: var(--glass-blur);                  /* تغبيش */
+    border-radius: 16px;                                 /* زوايا ناعمة */
+    cursor: pointer;                                     /* مؤشر اليد */
+    transition: background-color var(--theme-duration, .25s) ease, color var(--theme-duration, .25s) ease, opacity .25s ease; /* هوفر وتعطيل وتبديل الثيم */
+}
+
+/* تظهر الأسهم لما JS يكتشف إن فيه مشاريع مخفية */
+.section.is-scrollable .projects-slider__arrow {
+    display: grid;                                       /* إظهار الأسهم */
+}
+
+/* سهم الرجوع: على حافة البداية (يمين في RTL) - نصه بره والسهم في الجزء الظاهر */
+.projects-slider__arrow--previous {
+    inset-inline-start: calc(var(--arrow-peek) * -1);    /* جزء بارز بره البطاقة */
+    padding-inline-end: calc(var(--arrow-size) - var(--arrow-peek)); /* السهم في الجزء الظاهر */
+}
+
+/* سهم التالي: على حافة النهاية (يسار في RTL) */
+.projects-slider__arrow--next {
+    inset-inline-end: calc(var(--arrow-peek) * -1);      /* جزء بارز بره البطاقة */
+    padding-inline-start: calc(var(--arrow-size) - var(--arrow-peek)); /* السهم في الجزء الظاهر */
+}
+
+/* الهوفر: زجاج أبيض أوضح */
+.projects-slider__arrow:hover:not(:disabled) {
+    background: rgba(255, 255, 255, .9);                 /* أفتح */
+}
+
+/* السهم معطل لما توصل لأول أو آخر مشروع */
+.projects-slider__arrow:disabled {
+    opacity: .35;                                        /* باهت */
+    cursor: default;                                     /* بدون مؤشر يد */
+}
+
+/* حلقة التركيز للكيبورد */
+.projects-slider__arrow:focus-visible {
+    outline: 2px solid #fff;                             /* إطار أبيض */
+    outline-offset: 2px;                                 /* بعيد عن الحافة */
+}
+
+/* ---------- البطاقات (مشاريع + خدمات) ---------- */
+
+/* الشكل المشترك */
+.project-card {
+    color: black;
+    display: flex;                                       /* ترتيب مرن */
+    flex-direction: column;                              /* العناصر تحت بعض */
+    align-items: center;                                 /* توسيط أفقي */
+    gap: .5rem;                                          /* مسافة بين العناصر */
+    min-width: 0;                                        /* يسمح بالانكماش */
+    padding: 10px 10px 20px;                             /* حشو داخلي */
+    text-align: center;                                  /* النص في المنتصف */
+    background: rgba(255, 255, 255, 0.123);
+    backdrop-filter: blure(20px);                     /* خلفية فاتحة */
+    border-radius: 30px;                                 /* حواف دائرية */
+    transition: transform .3s ease, background-color var(--theme-duration) ease,
+    color var(--theme-duration) ease, box-shadow var(--theme-duration) ease; /* حركة الهوفر + تبديل الثيم */
+}
+
+/* بطاقة المشروع: عرضها ثابت داخل السلايدر */
+.project-card {
+    flex: 0 0 var(--card-width);                         /* نفس العرض لكل المشاريع (القديم والجديد) */
+    scroll-snap-align: start;                            /* التمرير يقف عند بداية البطاقة */
+}
+
+/* الهوفر: البطاقة ترتفع شوية */
+html:not(.no-effects) .project-card:hover {
+    transform: translateY(-10px);                        /* ترتفع 10px */
+}
+
+/* عنوان البطاقة */
+.project-card__title {
+    margin: .5rem 0;                                     /* هامش رأسي */
+    font-size: clamp(1.4rem, 2.2vw, 2rem);               /* حجم مرن من 1.4 لـ 2rem */
+}
+
+/* صورة المشروع */
+.project-card__image {
+    width: 70%;                                          /* 70% من عرض البطاقة */
+    aspect-ratio: 4 / 3;                                 /* نسبة ثابتة لكل الصور */
+    object-fit: cover;                                   /* ملء الإطار بدون تشويه */
+    object-position: top center;                         /* عرض أعلى الصورة */
+    border-radius: 20px;                                 /* حواف دائرية */
+}
+
+/* وصف المشروع / الخدمة */
+.project-card__description {
+    margin: 0;                                           /* بدون هامش */
+    font-size: clamp(1.05rem, 1.6vw, 1.5rem);            /* حجم مرن */
+    text-align: center;                                  /* توسيط */
+}
+
+/* زر الزيارة: بينزل لآخر البطاقة عشان كل الأزرار تتساوى */
+.project-card__button {
+    width: 150px;                                        /* عرض الزر */
+    height: 50px;                                        /* ارتفاع الزر */
+    margin-top: auto;                                    /* ينزل لآخر البطاقة */
+    font-size: 20px;                                     /* حجم الخط */
+    color: white;                                        /* لون النص */
+    background-image: var(--gradient-button);            /* تدرج أزرق */
+    border: hidden;                                      /* بدون حدود */
+    border-radius: 40px;                                 /* حواف دائرية */
+    cursor: pointer;                                     /* مؤشر اليد */
+    transition: .2s;                                     /* حركة الهوفر */
+}
+
+/* الهوفر: الزر يتسع */
+html:not(.no-effects) .project-card__button:hover {
+    width: 190px;                                        /* أعرض */
+    font-size: 23px;                                     /* خط أكبر */
+    box-shadow: 0 0 10px blue;                           /* توهج أزرق */
+}
+
+/* ---------- بطاقة الكورس (نفس بطاقة المشروع: صورة + زر بس) ---------- */
+
+/* إطار صور الكورسات: مستطيل 16:9 لعرض الصورة كاملة */
+.course-media {
+    position: relative;                                  /* مرجع للصورة والكتابة */
+    width: 100%;                                         /* عرض البطاقة كله */
+    aspect-ratio: 16 / 9;                                /* نفس نسبة صور الكورسات الأصلية */
+    overflow: hidden;                                    /* الحفاظ على الحواف المنحنية */
+    border-radius: 20px;                                 /* حواف دائرية */
+    background: rgba(0, 60, 160, .14);                   /* خلفية مكان الصورة */
+}
+
+/* اسم الملف المطلوب (بيتغطى بالصورة أول ما تتحط) */
+.course-media::before {
+    content: attr(data-label);                           /* اسم الصورة من data-label */
+    position: absolute;                                  /* في النص */
+    inset: 0;                                            /* يغطي الإطار */
+    display: grid;                                       /* توسيط */
+    place-items: center;                                 /* توسيط */
+    border: 1px dashed rgba(0, 0, 40, .22);              /* إطار متقطع (بيتغطى بالصورة) */
+    border-radius: inherit;                              /* نفس حواف الإطار */
+    direction: ltr;                                      /* اسم الملف إنجليزي */
+    font: 500 14px / 1.4 "JetBrains Mono", ui-monospace, Consolas, monospace; /* خط برمجي */
+    opacity: .55;                                        /* خافت */
+}
+
+/* صورة الكورس: بعرض البطاقة كله لأن مفيش نص */
+.project-card--course .project-card__image {
+    position: absolute;                                  /* فوق مكان الصورة */
+    inset: 0;                                            /* تملا الإطار */
+    width: 100%;                                         /* عرض كامل */
+    height: 100%;                                        /* ارتفاع كامل */
+    border-radius: inherit;                              /* نفس حواف الإطار */
+    object-fit: contain;                                 /* إظهار الصورة كاملة بدون قص */
+    object-position: center;                             /* توسيط الصورة */
+}
+
+/* لو مفيش صورة بأي امتداد: نخفيها ويفضل المكان الفاضي */
+.project-card__image.is-missing {
+    display: none;                                       /* إخفاء الصورة الناقصة */
+}
+
+/* زر "اشترك الآن" الواحد تحت الكورسات (متوسط الحجم، جوه كارد "ماذا نقدم") */
+.section__action {
+    display: flex;                                       /* لتوسيط الزر */
+    justify-content: center;                             /* في منتصف الكارد */
+    padding: 6px 10px 12px;                              /* مسافة بين الكورسات وحافة الكارد */
+}
+
+.section__button {
+    display: inline-flex;                                /* توسيط النص */
+    align-items: center;                                 /* توسيط رأسي */
+    justify-content: center;                             /* توسيط أفقي */
+    width: 190px;                                        /* حجم متوسط */
+    height: 52px;                                        /* ارتفاع متوسط */
+    font-family: inherit;                                /* خط الصفحة */
+    font-size: 21px;                                     /* حجم الخط */
+    color: white;                                        /* لون النص */
+    text-decoration: none;                               /* بدون خط تحت الرابط */
+    background-image: var(--gradient-button);            /* نفس تدرج أزرار المنصة */
+    border-radius: 40px;                                 /* حواف دائرية */
+    cursor: pointer;                                     /* مؤشر اليد */
+    transition: .2s;                                     /* حركة الهوفر */
+}
+
+html:not(.no-effects) .section__button:hover {
+    width: 215px;                                        /* يتسع شوية */
+    font-size: 23px;                                     /* خط أكبر */
+    box-shadow: 0 0 10px blue;                           /* توهج أزرق */
+}
+
+.section__button:focus-visible {
+    outline: 2px solid #7b9cff;                          /* إطار واضح للكيبورد */
+    outline-offset: 3px;                                 /* بعيد عن الحافة */
+}
+
+/* زر "اشترك الآن" (رابط بشكل الزر) */
+.project-card__button {
+    display: inline-flex;                                /* توسيط النص */
+    align-items: center;                                 /* توسيط رأسي */
+    justify-content: center;                             /* توسيط أفقي */
+    text-decoration: none;                               /* بدون خط تحت الرابط */
+    font-family: inherit;                                /* خط الصفحة */
+}
+
+.project-card__button:focus-visible {
+    outline: 2px solid #7b9cff;                          /* إطار واضح للكيبورد */
+    outline-offset: 3px;                                 /* بعيد عن الحافة */
+}
+
+
+/* ===== صفحة التواصل (متجاوبة لكل الشاشات) ===== */
+
+/* المحتوى: بيتوسّط بين الهيدر الثابت والفوتر الثابت ومايتغطاش بيهم */
+.site-main--contact {
+    display: flex;                                       /* ترتيب مرن */
+    align-items: center;                                 /* توسيط رأسي في المساحة المتاحة */
+    justify-content: center;                             /* توسيط أفقي */
+    padding-block: 90px 170px;                           /* موبايل: مكان الهيدر (أعلى) والفوتر (أسفل) */
+    padding-inline: 12px;                                /* هامش جانبي صغير */
+}
+
+.glass {
+    width: 100%;                                         /* بياخد عرض المتاح */
+    max-width: 600px;                                    /* وما يزيدش عن 600px */
+    padding: clamp(8px, 2vw, 10px);                      /* حشو يتناسب مع العرض */
+    text-align: center;                                  /* توسيط النص */
+    border: solid 1px rgba(255, 255, 255, 0.452);
+    border-radius: clamp(28px, 6vw, 50px);               /* حواف تصغر على الموبايل */
+    background: rgba(255, 255, 255, 0.068);
+    backdrop-filter: var(--glass-blur);
+    font-size: clamp(15px, 4vw, 25px);                   /* خط يتناسب مع العرض */
+    line-height: 1.7;                                    /* ارتفاع سطر مريح */
+    animation: glass-expand 1s var(--ease-out) var(--intro-delay) backwards; /* يبدأ شريط ضيق جدًا في النص ثم يتوسع */
+}
+
+.card {
+    padding: clamp(12px, 3vw, 18px) clamp(10px, 3vw, 16px); /* حشو يتناسب مع العرض */
+    border-radius: clamp(22px, 5vw, 40px);               /* حواف تصغر على الموبايل */
+    background: rgba(255, 255, 255, 0.247);
+    transition: background-color var(--theme-duration, .3s) ease, color var(--theme-duration, .3s) ease; /* تبديل ناعم بين الثيمين */
+}
+
+.card p {
+    margin: 0 0 .6em;                                    /* مسافة بين السطرين */
+    overflow-wrap: anywhere;                             /* الإيميل الطويل ما يخرجش بره البطاقة */
+    animation: card-text-in .8s ease calc(var(--intro-delay) + .8s) backwards; /* النص يظهر بالتدريج بعد ما المربع يتوسع */
+}
+
+.card p:nth-child(2) {
+    animation-delay: calc(var(--intro-delay) + 1.05s);   /* السطر التاني بعد الأول بشوية */
+}
+
+.card p:last-child {
+    margin-bottom: 0;                                    /* بدون مسافة بعد آخر سطر */
+}
+
+/* شاشات متوسطة وكبيرة: الفوتر أقصر فمساحة أقل تحته */
+@media (min-width: 701px) {
+    .site-main--contact {
+        padding-block: 100px 130px;                      /* ≥701px: الهيدر 72px والفوتر صف واحد */
+    }
+}
+
+/* موبايل بالعرض / شاشات قصيرة: قلل المساحات عشان المحتوى يظهر */
+@media (max-height: 520px) {
+    .site-main--contact {
+        padding-block: 84px 130px;                       /* شاشة قصيرة: مسافات أقل */
+    }
+
+    .glass {
+        font-size: clamp(14px, 2.6vw, 20px);             /* خط أصغر على الشاشة القصيرة */
+    }
+}
+
+
+/* ==========================================================================
+   6) الفوتر
+   ========================================================================== */
+
+/* الحاوية الزجاجية */
+.site-footer {
+    display: grid;                                       /* شبكة */
+    gap: 12px;                                           /* مسافة بين الاسم والأزرار */
+    flex-shrink: 0;                                      /* ما ينكمش داخل body */
+    width: min(97%, 1900px);                             /* 97% من العرض وأقصى 1900px */
+    margin-inline: auto;                                 /* توسيط أفقي */
+    margin-bottom: 20px;                                 /* مسافة من آخر الشاشة */
+    padding: 10px 8px;                                   /* حشو داخلي */
+    background: var(--glass-bg);                         /* خلفية زجاجية */
+    border: var(--glass-border);                         /* حدود زجاجية */
+    backdrop-filter: var(--glass-blur);                  /* تغبيش */
+    border-radius: 30px;                                 /* حواف دائرية */
+    z-index: 5;                                          /* فوق المحتوى */
+}
+
+/* صفحة التواصل: فوتر ثابت في آخر الشاشة وبيظهر في نفس لحظة الهيدر */
+.site-footer--fixed {
+    position: fixed;                                     /* ثابت */
+    inset-inline: 0;                                     /* ممتد أفقيًا عشان margin:auto يوسّطه */
+    bottom: 0;                                           /* في آخر الشاشة */
+    animation: footer-slide-up .8s var(--ease-out) var(--intro-delay) backwards; /* يطلع من تحت بنفس توقيت نزول الهيدر */
+}
+
+/* اسم الموقع في الفوتر */
+.site-footer__title {
+    margin: 0;                                           /* بدون هامش */
+    font-family: var(--font-brand);                      /* خط الشعار */
+    text-align: center;                                  /* توسيط */
+}
+
+/* شريط أزرار التواصل: موبايل (الأساس) 3 أعمدة */
+.social-bar {
+    display: grid;                                       /* شبكة */
+    grid-template-columns: repeat(3, minmax(0, 1fr));    /* 3 أزرار في الصف */
+    gap: 6px;                                            /* مسافة بين الأزرار */
+    width: min(100%, 640px);                             /* أقصى عرض 640px */
+    margin-inline: auto;                                 /* توسيط */
+    padding: 8px;                                        /* حشو داخلي */
+    background: rgba(255, 255, 255, .082);               /* خلفية خفيفة */
+    border: 1px solid rgba(255, 255, 255, .363);         /* حدود خفيفة */
+    border-radius: 28px;                                 /* حواف دائرية */
+}
+
+/* زر التواصل */
+.social-bar__button {
+    --accent: #888;                                      /* لون افتراضي (كل زر بيغيّره تحت) */
+    position: relative;                                  /* مرجع لتعبئة اللون */
+    display: inline-flex;                                /* ترتيب مرن */
+    flex-direction: column;                              /* موبايل: الأيقونة فوق النص */
+    align-items: center;                                 /* توسيط أفقي */
+    justify-content: center;                             /* توسيط رأسي */
+    gap: 3px;                                            /* مسافة بين الأيقونة والنص */
+    min-width: 0;                                        /* يسمح بالانكماش */
+    padding: 8px 2px;                                    /* حشو داخلي */
+    font-size: 12px;                                     /* حجم الخط */
+    color: inherit;                                      /* لون النص من الصفحة */
+    background: rgba(255, 255, 255, .144);               /* خلفية الزر */
+    border: 1.5px solid var(--accent);                   /* إطار بلون الزر */
+    border-radius: 22px;                                 /* حواف دائرية */
+    cursor: pointer;                                     /* مؤشر اليد */
+    overflow: hidden;                                    /* قص التعبئة داخل الزر */
+    z-index: 0;                                          /* طبقة محلية للتعبئة */
+    transition: transform .7s var(--ease-out), box-shadow .3s ease, color var(--theme-duration) ease,
+                background-color var(--theme-duration) ease, opacity .6s ease; /* هوفر + ثيم */
+}
+
+/* ألوان أزرار التواصل */
+.social-bar__button--youtube { --accent: #ff0000; }      /* يوتيوب: أحمر */
+.social-bar__button--tiktok { --accent: #25f4ee; }       /* تيك توك: تركواز */
+.social-bar__button--instagram { --accent: #e4405f; }    /* إنستجرام: وردي */
+.social-bar__button--github { --accent: #8b5cf6; }       /* جيت هاب: بنفسجي */
+.social-bar__button--linkedin { --accent: #0a66c2; }     /* لينكد إن: أزرق */
+
+/* تعبئة اللون من تحت لفوق عند الهوفر */
+.social-bar__button::before {
+    content: "";                                         /* عنصر وهمي للتعبئة */
+    position: absolute;                                  /* فوق الزر */
+    inset: 0;                                            /* يغطي الزر */
+    background: var(--accent);                           /* لون الزر */
+    transform: translateY(101%);                         /* مخفي تحت الزر */
+    transition: transform .35s ease;                     /* صعود ناعم */
+    z-index: -1;                                         /* خلف النص */
+}
+
+/* أيقونة الزر */
+.social-bar__icon {
+    font-size: 20px;                                     /* موبايل: حجم الأيقونة */
+    color: var(--accent);                                /* بلون الزر */
+    transition: transform .4s cubic-bezier(.34, 1.56, .64, 1), color .3s ease; /* ارتداد خفيف */
+}
+
+/* الهوفر: الزر يرتفع ويتلون */
+.social-bar__button:hover {
+    transform: translateY(-4px);                         /* يرتفع 4px */
+    color: #fff;                                         /* نص أبيض */
+    box-shadow: 0 8px 20px color-mix(in srgb, var(--accent) 45%, transparent); /* ظل بلون الزر */
+}
+
+/* الهوفر: التعبئة تطلع */
+.social-bar__button:hover::before {
+    transform: translateY(0);                            /* التعبئة تغطي الزر */
+}
+
+/* الهوفر: الأيقونة تكبر وتلف */
+.social-bar__button:hover .social-bar__icon {
+    color: #fff;                                         /* أيقونة بيضاء */
+    transform: scale(1.25) rotate(-12deg);               /* تكبير + دوران */
+}
+
+/* الضغط على الزر */
+.social-bar__button:active {
+    transform: translateY(-1px) scale(.97);              /* انضغاط بسيط */
+}
+
+
+/* ==========================================================================
+   7) الأزرار العائمة (تبديل الثيم + الصعود لأعلى)
+   ========================================================================== */
+
+/* الحاوية الزجاجية: مخفية في الأول وبعدين تطلع من تحت لفوق */
+.floating-toolbar {
+    position: fixed;                                     /* ثابتة في الشاشة */
+    bottom: 5px;                                         /* 5px من آخر الشاشة */
+    right: 5px;                                          /* 5px من يمين الشاشة */
+    display: flex;                                       /* الأزرار جنب بعض */
+    gap: 5px;                                            /* مسافة بين الزرين */
+    padding: 5px;                                        /* حشو داخلي */
+    background: transparent;                             /* بدون خلفية (الزجاج من الحدود والتغبيش) */
+    border: var(--glass-border);                         /* حدود زجاجية */
+    backdrop-filter: var(--glass-blur);                  /* تغبيش */
+    border-radius: 50px;                                 /* حواف دائرية */
+    z-index: 5;                                          /* فوق المحتوى */
+    animation: toolbar-slide-up .7s var(--ease-out) var(--intro-delay) backwards; /* مخفية في الأول ثم تطلع من تحت لفوق */
+}
+
+/* الزر العائم */
+.floating-toolbar__button {
+    display: grid;                                       /* لتوسيط الأيقونة */
+    place-items: center;                                 /* توسيط الأيقونة */
+    width: 38px;                                         /* عرض الزر */
+    min-width: 38px;                                     /* ما ينكمش */
+    height: 38px;                                        /* ارتفاع الزر */
+    color: #11152c;                                      /* لون الأيقونة */
+    background: rgba(255, 255, 255, .774);               /* خلفية فاتحة */
+    border: hidden;                                      /* بدون حدود */
+    border-radius: 50px;                                 /* دائري */
+    box-shadow: 0 3px 18px rgba(0, 0, 0, .12);           /* ظل خفيف */
+    cursor: pointer;                                     /* مؤشر اليد */
+    transition: background-color var(--theme-duration) ease,
+                color var(--theme-duration) ease, box-shadow .3s ease; /* هوفر + ثيم */
+    animation: button-pop-up .7s var(--ease-out) calc(var(--intro-delay) + .75s) backwards; /* الزر يتحرك بعد ظهور الحاوية */
+}
+
+/* الزر التاني يتحرك بعد الأول بشوية */
+.floating-toolbar__button:nth-child(2) {
+    animation-delay: calc(var(--intro-delay) + .93s);    /* تأخير إضافي .18s */
+}
+
+/* حجم الأيقونة */
+.floating-toolbar__button i {
+    font-size: 15px;                                     /* حجم الأيقونة */
+}
+
+/* الهوفر: الزر يضيء (بدون حركة) - بيقف لما التأثيرات تتوقف */
+html:not(.no-effects) .floating-toolbar__button:hover {
+    background-color: #fff;                              /* أبيض ساطع */
+    box-shadow: 0 0 10px 2px rgba(255, 255, 255, .85), 0 0 26px 6px rgba(150, 175, 255, .55); /* توهج */
+}
+
+/* حلقة التركيز للكيبورد */
+.floating-toolbar__button:focus-visible {
+    outline: 2px solid #7b9cff;                          /* إطار واضح */
+    outline-offset: 3px;                                 /* بعيد عن الحافة */
+}
+
+
+/* ==========================================================================
+   8) الخلفية التقنية (بدل الفضاء): شبكة + أرقام 0 و 1 نازلة ببطء + مقتطفات كود طافية
+   - الأرقام بيرسمها script.js على الـ canvas (initTechBackground)
+   - ألوان الأرقام من --digit-rgb / --digit-head-rgb (بتتغير مع الثيم)
+   ========================================================================== */
+
+/* الغلاف الثابت: فوق تدرج الخلفية وتحت الهيدر والمحتوى */
+.tech-bg {
+    --digit-rgb: 120, 196, 255;                          /* لون الأرقام في الثيم الفاتح (أزرق سماوي) */
+    --digit-head-rgb: 214, 240, 255;                     /* لون رأس العمود (الرقم الأسطع) */
+    --grid-rgb: 130, 170, 255;                           /* لون خطوط الشبكة */
+    --snippet-rgb: 170, 205, 255;                        /* لون مقتطفات الكود */
+    position: fixed;                                     /* ثابت مع الشاشة */
+    inset: 0;                                            /* يغطي الشاشة */
+    z-index: 0;                                          /* فوق الخلفية وتحت الهيرو والمحتوى */
+    overflow: hidden;                                    /* قص أي عنصر خارج الشاشة */
+    pointer-events: none;                                /* ما يمنعش الضغط */
+    animation: tech-fade-in 3.2s ease-out backwards;     /* بداية الموقع: الخلفية تظهر بسلاسة */
+}
+
+/* ألوان الثيم الداكن: أخضر مزرق هادي */
+html.theme-dark .tech-bg {
+    --digit-rgb: 64, 214, 190;                           /* أرقام تركواز */
+    --digit-head-rgb: 190, 255, 240;                     /* رأس العمود */
+    --grid-rgb: 110, 130, 220;                           /* شبكة بنفسجية خافتة */
+    --snippet-rgb: 140, 220, 205;                        /* مقتطفات الكود */
+}
+
+/* شبكة الهندسة: بتتحرك ببطء جدًا بالـ transform (على كرت الرسوم) */
+.tech-bg__grid {
+    position: absolute;                                  /* داخل الغلاف */
+    inset: -64px;                                        /* أكبر من الشاشة بمقدار خانة عشان الحركة ما تكشفش حافة */
+    background-image:
+        linear-gradient(rgba(var(--grid-rgb), .10) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(var(--grid-rgb), .10) 1px, transparent 1px); /* خطوط أفقية ورأسية */
+    background-size: 64px 64px;                          /* مقاس الخانة */
+    -webkit-mask-image: radial-gradient(ellipse at 50% 45%, #000 20%, transparent 78%);
+    mask-image: radial-gradient(ellipse at 50% 45%, #000 20%, transparent 78%); /* تتلاشى ناحية الأطراف */
+    animation: tech-grid-pan 38s linear infinite;        /* انجراف بطيء ومتكرر */
+    will-change: transform;                              /* تحسين الأداء */
+}
+
+/* لوحة رسم الأرقام */
+.tech-bg__digits {
+    position: absolute;                                  /* داخل الغلاف */
+    inset: 0;                                            /* تغطي الشاشة */
+    width: 100%;                                         /* عرض كامل */
+    height: 100%;                                        /* ارتفاع كامل */
+}
+
+/* توهجات ناعمة + تعتيم الأطراف (عشان الأرقام ما تشتتش عن المحتوى) */
+.tech-bg__glow {
+    position: absolute;                                  /* داخل الغلاف */
+    inset: 0;                                            /* تغطي الشاشة */
+    background:
+        radial-gradient(ellipse 55% 45% at 22% 30%, rgba(56, 140, 255, .16), transparent 70%),
+        radial-gradient(ellipse 50% 40% at 80% 72%, rgba(120, 90, 255, .15), transparent 70%),
+        radial-gradient(ellipse at center, transparent 55%, rgba(0, 2, 24, .45) 100%); /* لمعتين + تعتيم الأطراف */
+    transition: opacity var(--theme-duration) ease;      /* تبديل ناعم */
+}
+
+html.theme-dark .tech-bg__glow {
+    opacity: .8;                                         /* أهدى في الداكن */
+}
+
+/* مقتطفات الكود الطافية (ديكور خفيف جدًا) */
+.tech-bg__snippet {
+    position: absolute;                                  /* مكانها من --x / --y */
+    left: calc(var(--x) * 1%);                           /* موضع أفقي (--x من 0 لـ 100) */
+    top: calc(var(--y) * 1%);                            /* موضع رأسي */
+    translate: calc(var(--x) * -1%) 0;                   /* 0 = يبدأ من الشمال، 100 = ينتهي عند الحافة اليمين (فمايتقصش) */
+    font: 500 clamp(12px, 1.25vw, 17px) / 1.4 "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, monospace; /* خط برمجي */
+    direction: ltr;                                      /* الكود دايمًا من الشمال لليمين */
+    white-space: nowrap;                                 /* سطر واحد */
+    color: rgba(var(--snippet-rgb), .5);                 /* لون المقتطف */
+    opacity: 0;                                          /* يبدأ مخفي (الأنيميشن بيظهره) */
+    animation: tech-snippet var(--dur, 22s) ease-in-out var(--delay, 0s) infinite; /* ظهور + طفو + اختفاء */
+    transition: color var(--theme-duration) ease;        /* تبديل ناعم بين الثيمين */
+}
+
+/* موبايل: مقتطفات أقل */
+@media (max-width: 700px) {
+    .tech-bg__snippet:nth-child(n + 8) {
+        display: none;                                   /* نخلي أول 7 بس */
+    }
+}
+
+/* ==========================================================================
+   9) الثيم الداكن (بيتفعل بإضافة .theme-dark على <html>)
+   ========================================================================== */
+
+/* تبديل ناعم لألوان العناصر الرئيسية بين الثيمين */
+body,
+html,
+.site-header,
+.site-footer,
+.section__card,
+.section__badge,
+.social-bar,
+.floating-toolbar {
+    transition: background-color var(--theme-duration) ease, color var(--theme-duration) ease,
+                border-color var(--theme-duration) ease, box-shadow var(--theme-duration) ease; /* تبديل ناعم */
+}
+
+/* متغيرات الثيم الداكن */
+html.theme-dark {
+    color-scheme: dark;                                  /* عناصر المتصفح الداكنة */
+    color: #f4f6ff;                                      /* نص فاتح */
+    --glass-bg: rgba(12, 15, 30, .48);                   /* زجاج داكن */
+    --glass-border: 1px solid rgba(180, 190, 255, .24);  /* حدود زجاج داكنة */
+    --surface-card: rgba(25, 29, 48, .94);               /* بطاقات داكنة */
+    --surface-panel: rgba(32, 37, 59, .94);              /* لوحات داكنة */
+}
+
+/* الخلفية: الداكنة تظهر والفاتحة تختفي */
+html.theme-dark::before { opacity: 0; }                  /* إخفاء الخلفية الزرقاء */
+html.theme-dark::after { opacity: 1; }                   /* إظهار الخلفية الداكنة */
+
+/* ألوان النصوص داخل الأقسام في الثيم الداكن */
+html.theme-dark .section__badge-label,
+html.theme-dark .project-card {
+    color: #f4f6ff;                                      /* نص فاتح */
+}
+
+html.theme-dark .course-media {
+    background: rgba(120, 140, 255, .12);                /* مكان الصورة في الداكن */
+}
+
+html.theme-dark .course-media::before {
+    border-color: rgba(200, 210, 255, .25);              /* إطار فاتح */
+}
+
+/* نص أزرار الهيدر في الثيم الداكن */
+html.theme-dark .site-header__button {
+    color: #f8faff;                                      /* نص فاتح */
+}
+
+/* أسهم الانتقال بين الكورسات في الثيم الداكن */
+html.theme-dark .projects-slider__arrow {
+    color: #f4f6ff;                                      /* سهم فاتح */
+    background: rgba(28, 33, 55, .86);                   /* زجاج داكن */
+    box-shadow: 0 4px 18px rgba(0, 0, 0, .45);           /* ظل بدل التوهج الأبيض */
+}
+
+html.theme-dark .projects-slider__arrow:hover:not(:disabled) {
+    background: rgba(48, 56, 92, .95);                   /* أفتح شوية عند الهوفر */
+}
+
+html.theme-dark .projects-slider__arrow:focus-visible {
+    outline-color: #aab4ff;                              /* إطار تركيز مناسب للداكن */
+}
+
+/* صفحة التواصل في الثيم الداكن: الإطار الزجاجي والمربع اللي فيه البريد */
+html.theme-dark .glass {
+    border-color: rgba(180, 190, 255, .24);              /* حدود زجاج داكنة */
+    background: rgba(12, 15, 30, .45);                   /* زجاج داكن */
+}
+
+html.theme-dark .card {
+    background: rgba(25, 29, 48, .94);                   /* نفس لون البطاقات الداكنة */
+    color: #f4f6ff;                                      /* نص فاتح */
+}
+
+/* هوفر الأزرار العائمة في الثيم الداكن: ظل داكن بدل التوهج الأبيض */
+html.theme-dark:not(.no-effects) .floating-toolbar__button:hover {
+    background-color: rgba(40, 47, 78, .98);             /* داكن أفتح شوية */
+    box-shadow: 0 0 10px 2px rgba(0, 0, 0, .75), 0 0 26px 6px rgba(5, 8, 30, .7); /* ظل داكن */
+}
+
+/* الأزرار العائمة في الثيم الداكن */
+html.theme-dark .floating-toolbar__button {
+    background: rgba(28, 33, 55, .96);                   /* خلفية داكنة */
+    color: #fff;                                         /* أيقونة بيضاء */
+}
+
+
+/* ==========================================================================
+   10) ظهور العناصر عند الوصول إليها بالسكرول (الكلاس is-visible بيضيفه script.js)
+   ========================================================================== */
+
+/* قبل الظهور: بطاقات الكورسات مخفية */
+.project-card {
+    opacity: 0;                                          /* مخفية لحد ما تدخل الشاشة */
+}
+
+/* بعد الظهور: تظهر بحركة صعود. الأنيميشن (مش transition) عشان الهوفر ما يتأخرش */
+.project-card.is-visible {
+    opacity: 1;                                          /* ظاهرة */
+    animation: reveal-up .8s var(--ease-out) backwards;  /* صعود ناعم من تحت */
+}
+
+/* الزر الواحد يظهر مع الكورسات (نفس توقيت الظهور) */
+.section__button {
+    opacity: 0;                                          /* مخفي لحد ما الكورسات تظهر */
+}
+
+.section__button.is-visible {
+    opacity: 1;                                          /* ظاهر */
+    animation: reveal-up .8s var(--ease-out) .3s backwards; /* صعود ناعم بعد الكورسات */
+}
+
+/* ظهور متتابع للبطاقات */
+.project-card:nth-child(2) { animation-delay: .12s; }    /* البطاقة التانية بعد .12 ثانية */
+.project-card:nth-child(3) { animation-delay: .24s; }    /* البطاقة التالتة بعد .24 ثانية */
+
+/* أزرار فوتر الصفحة الرئيسية: مخفية لحد ما الفوتر يدخل الشاشة */
+.site-footer:not(.site-footer--fixed):not(.is-visible) .social-bar__button {
+    opacity: 0;                                          /* مخفية */
+}
+
+/* بعد ظهور الفوتر: الأزرار تطلع من تحت بالتتابع */
+.site-footer.is-visible .social-bar__button {
+    animation: button-slide-up .7s var(--ease-out) backwards; /* صعود ناعم */
+}
+
+/* تتابع ظهور أزرار الفوتر */
+.site-footer.is-visible .social-bar__button:nth-child(1) { animation-delay: .05s; } /* الأول */
+.site-footer.is-visible .social-bar__button:nth-child(2) { animation-delay: .15s; } /* التاني */
+.site-footer.is-visible .social-bar__button:nth-child(3) { animation-delay: .25s; } /* التالت */
+.site-footer.is-visible .social-bar__button:nth-child(4) { animation-delay: .35s; } /* الرابع */
+.site-footer.is-visible .social-bar__button:nth-child(5) { animation-delay: .45s; } /* الخامس */
+
+/* صفحة التواصل: أزرار الفوتر تطلع بنفس توقيت وتتابع أزرار الهيدر بالظبط */
+.site-footer--fixed .social-bar__button {
+    animation: button-slide-up .8s var(--ease-out) backwards; /* نفس مدة نزول أزرار الهيدر */
+}
+.site-footer--fixed .social-bar__button:nth-child(1) { animation-delay: calc(var(--intro-delay) + .25s); } /* الأول */
+.site-footer--fixed .social-bar__button:nth-child(2) { animation-delay: calc(var(--intro-delay) + .31s); } /* التاني */
+.site-footer--fixed .social-bar__button:nth-child(3) { animation-delay: calc(var(--intro-delay) + .37s); } /* التالت */
+.site-footer--fixed .social-bar__button:nth-child(4) { animation-delay: calc(var(--intro-delay) + .43s); } /* الرابع */
+.site-footer--fixed .social-bar__button:nth-child(5) { animation-delay: calc(var(--intro-delay) + .49s); } /* الخامس */
+
+
+/* ==========================================================================
+   11) الحركات (Keyframes)
+   ========================================================================== */
+
+/* الهيدر ينزل من فوق */
+@keyframes header-slide-down {
+    from { transform: translateY(-80px); opacity: 0; }   /* بداية: فوق الشاشة وشفاف */
+    to   { transform: translateY(0);     opacity: 1; }   /* نهاية: في مكانه وظاهر */
+}
+
+/* أزرار الهيدر تنزل من فوق */
+@keyframes button-slide-down {
+    from { transform: translateY(-60px); opacity: 0; }   /* بداية: فوق وشفاف */
+    to   { transform: translateY(0);     opacity: 1; }   /* نهاية: في مكانه */
+}
+
+/* أزرار الفوتر تطلع من تحت */
+@keyframes button-slide-up {
+    from { transform: translateY(40px); opacity: 0; }    /* بداية: تحت وشفاف */
+    to   { transform: translateY(0);    opacity: 1; }    /* نهاية: في مكانه */
+}
+
+/* مربع التواصل: يبدأ ضيق جدًا في منتصف مكانه ثم يتوسع للعرض الكامل (قص بدل تغيير العرض عشان الارتفاع ما يتغيرش) */
+@keyframes glass-expand {
+    from { clip-path: inset(0 calc(50% - 26px) round clamp(28px, 6vw, 50px)); opacity: 0; } /* شريط عرضه ~52px */
+    20%  { opacity: 1; }                                 /* يظهر الشريط الأول */
+    to   { clip-path: inset(0 0 round clamp(28px, 6vw, 50px)); opacity: 1; }  /* العرض الكامل */
+}
+
+/* ظهور تدريجي لنص مربع التواصل */
+@keyframes card-text-in {
+    from { opacity: 0; transform: translateY(8px); }     /* مخفي وتحت شوية */
+    to   { opacity: 1; transform: translateY(0); }       /* ظاهر في مكانه */
+}
+
+/* الفوتر (صفحة التواصل) يطلع من تحت: عكس الهيدر بنفس المدة */
+@keyframes footer-slide-up {
+    from { transform: translateY(80px); opacity: 0; }    /* بداية: تحت الشاشة وشفاف */
+    to   { transform: translateY(0);    opacity: 1; }    /* نهاية: في مكانه */
+}
+
+/* حاوية الأزرار العائمة تطلع من تحت لفوق */
+@keyframes toolbar-slide-up {
+    from { transform: translateY(60px); opacity: 0; }    /* بداية: تحت وشفافة */
+    to   { transform: translateY(0);    opacity: 1; }    /* نهاية: في مكانها */
+}
+
+/* الأزرار العائمة تتحرك داخل الحاوية بعد ظهورها */
+@keyframes button-pop-up {
+    from { transform: translateY(24px) scale(.8); opacity: 0; } /* بداية: أصغر وتحت وشفاف */
+    to   { transform: translateY(0) scale(1);     opacity: 1; } /* نهاية: حجم طبيعي */
+}
+
+/* ظهور البطاقات واللوحات عند السكرول */
+@keyframes reveal-up {
+    from { transform: translateY(38px); opacity: 0; }    /* بداية: تحت وشفافة */
+    to   { transform: translateY(0);    opacity: 1; }    /* نهاية: في مكانها */
+}
+
+/* ظهور تدريجي */
+@keyframes fade-in {
+    from { opacity: 0; }                                 /* بداية: شفاف */
+    to   { opacity: 1; }                                 /* نهاية: ظاهر */
+}
+
+/* دخول العنوان والوصف من الجنب (المسافة من --slide-from) */
+@keyframes slide-in {
+    from { opacity: 0; transform: translateX(var(--slide-from)); } /* بداية: بعيد وشفاف */
+    to   { opacity: 1; transform: translateX(0); }       /* نهاية: في مكانه */
+}
+
+/* الدائرة بتطلع شوية لفوق وهي بتظهر */
+@keyframes portrait-rise {
+    from { opacity: 0; transform: translateY(0); }       /* بداية: شفافة */
+    to   { opacity: 1; transform: translateY(calc(-30 * var(--unit))); } /* نهاية: طلعت لفوق */
+}
+
+/* الأيقونات تخرج من الشخص لمكانها */
+@keyframes tech-emerge {
+    from { opacity: 0; transform: translate(calc(var(--from-x) * var(--unit)), calc(var(--from-y) * var(--unit))); } /* بداية: جوه الدائرة */
+    to   { opacity: 1; transform: translate(calc(var(--to-x) * var(--unit)), calc(var(--to-y) * var(--unit))); }     /* نهاية: مكانها حوالين الشخص */
+}
+
+/* الأيقونات من ضبابية لواضحة */
+@keyframes tech-focus {
+    from { transform: scale(.85); filter: blur(14px); }  /* بداية: أصغر وضبابية */
+    to   { transform: scale(1);   filter: blur(0); }     /* نهاية: واضحة */
+}
+
+/* الطفو المستمر للأيقونات */
+@keyframes tech-float {
+    0%   { transform: translate(0, 0) rotate(0deg); }    /* البداية: في مكانها */
+    50%  { transform: translate(calc(var(--float-x) * var(--unit)), calc(var(--float-y) * var(--unit) * -1)) rotate(var(--float-rotation)); } /* منتصف: فوق ويمين */
+    100% { transform: translate(calc(var(--float-x) * var(--unit) * -1), calc(var(--float-y) * var(--unit))) rotate(calc(var(--float-rotation) * -1)); } /* نهاية: تحت وشمال */
+}
+
+/* ظهور الخلفية التقنية */
+@keyframes tech-fade-in {
+    from { opacity: 0; }                                 /* بداية: شفافة */
+    to   { opacity: 1; }                                 /* نهاية: ظاهرة */
+}
+
+/* انجراف الشبكة خانة واحدة ثم تتكرر (حلقة غير ملحوظة) */
+@keyframes tech-grid-pan {
+    from { transform: translate3d(0, 0, 0); }           /* بداية */
+    to   { transform: translate3d(64px, 64px, 0); }     /* نهاية: خانة كاملة */
+}
+
+/* مقتطف كود: يظهر ويطفو لفوق ببطء ثم يختفي */
+@keyframes tech-snippet {
+    0%   { opacity: 0;   transform: translateY(14px); }
+    18%  { opacity: .55; }
+    82%  { opacity: .55; }
+    100% { opacity: 0;   transform: translateY(-26px); }
+}
+
+/* الأزرار الزجاجية تدخل من الجنب (والشفافية بتقل مع اختفاء الهيرو) */
+@keyframes glass-button-in {
+    from { opacity: 0; transform: translateX(var(--slide-from)); } /* بداية: بعيد وشفاف */
+    to   { opacity: calc(1 - var(--subtitle-progress)); transform: translateX(0); } /* نهاية: في مكانه */
+}
+
+/* ظهور الهالة */
+@keyframes glow-in {
+    from { opacity: 0; }                                 /* بداية: شفافة */
+    to   { opacity: var(--glow-opacity, 1); }            /* نهاية: الشفافية المحددة للعنصر */
+}
+
+/* نبض الهالة */
+@keyframes glow-pulse {
+    from { opacity: 1;  scale: 1; }                      /* بداية: كاملة */
+    to   { opacity: .8; scale: 1.05; }                   /* نهاية: أهدى وأكبر شوية */
+}
+
+/* ==========================================================================
+   12) تقليل الحركة (لمن يفضّل ذلك في إعدادات الجهاز)
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+    /* عناصر الهيرو تظهر مباشرة بدون أنيميشن */
+    .hero__portrait,
+    .hero__photo,
+    .hero__title,
+    .hero__subtitle,
+    .tech-icon {
+        opacity: 1;                                      /* ظاهرة */
+        animation: none;                                 /* بدون حركة */
+    }
+
+    /* الهالة والتوهج بدون حركة */
+    .hero__portrait::before,
+    .hero__glow {
+        opacity: 1;                                      /* ظاهرة */
+        animation: none;                                 /* بدون حركة */
+    }
+
+    /* الخلفية التقنية ثابتة (الأرقام بيرسمها JS مرة واحدة) */
+    .tech-bg,
+    .tech-bg__grid {
+        animation: none;                                 /* بدون حركة */
+    }
+
+    .tech-bg__snippet {
+        animation: none;                                 /* بدون طفو */
+        opacity: .35;                                    /* ظاهرة بخفوت */
+    }
+
+    /* الهيرو يتحرك مع الصفحة بدل ما يثبت */
+    .hero {
+        position: static;                                /* بدون تثبيت */
+    }
+
+    /* الدائرة في مكانها النهائي */
+    .hero__portrait {
+        transform: translateY(calc(-30 * var(--unit)));  /* مكانها بعد الطلوع */
+    }
+
+    /* الأيقونات في مكانها النهائي */
+    .tech-icon {
+        transform: translate(calc(var(--to-x) * var(--unit)), calc(var(--to-y) * var(--unit))); /* مكانها حوالين الشخص */
+    }
+
+    /* بدون ضبابية أو طفو */
+    .tech-icon__entrance,
+    .tech-icon__floating {
+        animation: none;                                 /* بدون حركة */
+    }
+
+    /* تبديل الثيم فوري */
+    html::before,
+    html::after {
+        transition: none;                                /* بدون انتقال */
+    }
+
+    /* الأزرار الزجاجية تظهر مباشرة */
+    .glass-button {
+        opacity: 1;                                      /* ظاهرة */
+        animation: none;                                 /* بدون حركة دخول */
+    }
+
+    /* كل العناصر المتحركة تظهر مباشرة */
+    .project-card,
+    .social-bar__button,
+    .floating-toolbar,
+    .floating-toolbar__button,
+    .site-header,
+    .site-header__button,
+    .site-footer--fixed,
+    .glass,
+    .card p {
+        opacity: 1 !important;                           /* ظاهرة دايمًا */
+        animation: none !important;                      /* بدون حركة دخول */
+    }
+}
+
+
+/* ==========================================================================
+   13) التجاوب - من الأصغر للأكبر (Mobile First)
+   الأساس (بدون media) = الموبايل
+   ========================================================================== */
+
+/* ---------- من 521px فأكبر (موبايل كبير / تابلت صغير) ---------- */
+@media (min-width: 521px) {
+    .site-header {
+        height: 72px;                                    /* ≥521px: الهيدر أطول (72px) */
+        padding: 10px;                                   /* ≥521px: حشو أكبر */
+        gap: 5px;                                        /* ≥521px: مسافة أكبر بين الأزرار */
+    }
+
+    .site-header__button {
+        flex-direction: row;                             /* ≥521px: الأيقونة جنب النص */
+        gap: 5px;                                        /* ≥521px: مسافة بين الأيقونة والنص */
+        padding: 5px 6px;                                /* ≥521px: حشو أوسع */
+        font-size: 15px;                                 /* ≥521px: خط 15px */
+        border-radius: 40px;                             /* ≥521px: حواف أكبر */
+    }
+
+    .site-header__icon {
+        font-size: 17px;                                 /* ≥521px: أيقونة 17px */
+    }
+
+    .projects-slider {
+        --cards-visible: 2;                              /* ≥521px: كورسين ظاهرين في نفس الوقت */
+    }
+
+    .site-header__button--author .site-header__label {
+        font-size: .86em;                                /* ≥521px: اسم Abo Shaheen أصغر شوية عشان يكفي في سطر */
+    }
+
+}
+
+/* ---------- من 701px فأكبر (تابلت) ---------- */
+@media (min-width: 701px) {
+    .site-header__button {
+        gap: 8px;                                        /* ≥701px: مسافة أكبر بين الأيقونة والنص */
+        padding: 5px 8px;                                /* ≥701px: حشو أوسع */
+        font-size: 18px;                                 /* ≥701px: خط 18px */
+    }
+
+    .site-header__icon {
+        font-size: 20px;                                 /* ≥701px: أيقونة 20px */
+    }
+
+    .social-bar {
+        grid-template-columns: repeat(5, minmax(0, 1fr)); /* ≥701px: 5 أزرار في صف واحد */
+        border-radius: 40px;                             /* ≥701px: حواف أكبر */
+    }
+
+    .social-bar__button {
+        flex-direction: row;                             /* ≥701px: الأيقونة جنب النص */
+        gap: 6px;                                        /* ≥701px: مسافة بين الأيقونة والنص */
+        padding: 10px 8px;                               /* ≥701px: حشو أوسع */
+        font-size: 14px;                                 /* ≥701px: خط 14px */
+        border-radius: 30px;                             /* ≥701px: حواف أكبر */
+    }
+
+    .social-bar__icon {
+        font-size: 23px;                                 /* ≥701px: أيقونة 23px */
+    }
+}
+
+/* ---------- حتى 700px (موبايل): أزرار التواصل الخمسة في صف واحد ---------- */
+@media (max-width: 700px) {
+    .social-bar {
+        grid-template-columns: repeat(5, minmax(0, 1fr)); /* ≤700px: 5 أزرار في صف */
+        gap: 4px;                                        /* ≤700px: مسافة صغيرة */
+        width: 100%;                                     /* ≤700px: عرض كامل */
+        padding: 5px;                                    /* ≤700px: حشو صغير */
+        border-radius: 22px;                             /* ≤700px: حواف أصغر */
+    }
+
+    .social-bar__button {
+        flex-direction: column;                          /* ≤700px: الأيقونة فوق النص */
+        gap: 3px;                                        /* ≤700px: مسافة صغيرة */
+        padding: 7px 1px;                                /* ≤700px: حشو صغير */
+        font-size: clamp(8px, 2.4vw, 11px);              /* ≤700px: خط يصغر مع العرض */
+        border-radius: 13px;                             /* ≤700px: حواف أصغر */
+    }
+
+    .social-bar__icon {
+        font-size: clamp(14px, 4vw, 19px);               /* ≤700px: أيقونة تصغر مع العرض */
+    }
+}
+
+/* ---------- من 900px فأكبر: 3 كورسات ظاهرين ---------- */
+@media (min-width: 900px) {
+    .projects-slider {
+        --cards-visible: 3;                              /* ≥900px: 3 كورسات ظاهرين والباقي بالتمرير */
+    }
+}
+
+/*
+   أي شاشة عريضة (لابتوب، ديسكتوب، آيباد بالعرض، موبايل بالعرض):
+   الصورة في عمود والاسم والوصف في عمود، والمقاس بيتحسب بحيث يظهر كله.
+*/
+@media (min-width: 900px), (min-aspect-ratio: 5/4) and (min-width: 540px) {
+    :root {
+        --unit: max(.3px, min(calc((100vw - 90px - var(--hero-text-width)) * .00167), calc((100svh - 130px) * .00168), .92px)); /* شاشة عريضة: الوحدة بتحسب مع عمود النص */
+        --text-shift: clamp(0px, calc(100vw - 1180px), 100px); /* شاشة عريضة: إزاحة النص للجنب (صفر على الضيقة وتوصل 100px من 1280px) */
+    }
+
+    .hero {
+        display: grid;                                   /* شاشة عريضة: عمودين (صورة | نص) */
+        grid-template-columns: calc(594 * var(--unit)) minmax(0, var(--hero-text-width)); /* عمود الصورة + عمود النص */
+        grid-template-rows: repeat(2, calc(225 * var(--unit) + 5px)); /* صفين للاسم والوصف */
+        justify-content: center;                         /* توسيط الأعمدة أفقيًا */
+        align-content: center;                           /* توسيط الصفوف رأسيًا */
+        align-items: normal;                             /* إلغاء توسيط موبايل */
+        column-gap: 56px;                                /* مسافة بين الصورة والنص */
+        padding-top: calc(92px + 135 * var(--unit));     /* مكان الهيدر والأيقونات */
+        text-align: start;                               /* النص يبدأ من اليمين */
+    }
+
+    .hero__portrait {
+        grid-column: 1;                                  /* الدائرة في العمود الأول */
+        grid-row: 1 / 3;                                 /* وتمتد على الصفين */
+        margin: 0 auto;                                  /* بدون هامش سفلي */
+    }
+
+    .hero__title {
+        grid-column: 2;                                  /* الاسم في العمود التاني */
+        grid-row: 1;                                     /* الصف الأول */
+        align-self: end;                                 /* ملزوق في أسفل الصف */
+        top: calc(-30 * var(--unit));                    /* يتوسط مع حركة الدائرة */
+        right: var(--text-shift);                        /* إزاحة جانبية */
+        transform-origin: right center;                  /* التصغير من اليمين */
+        margin: 0;                                       /* بدون هامش */
+        font-size: clamp(24px, 3vw, 40px);               /* خط يتناسب مع العرض */
+    }
+
+    .hero__lower {
+        grid-column: 2;                                  /* شاشة عريضة: الوصف والأزرار في العمود التاني */
+        grid-row: 2;                                     /* الصف التاني */
+        align-self: start;                               /* ملزوقين في أعلى الصف */
+        display: flex;                                   /* الوصف فوق والأزرار تحته */
+        flex-direction: column;                          /* تحت بعض */
+        align-items: flex-start;                         /* يبدأوا من اليمين */
+    }
+
+    .hero__subtitle {
+        top: calc(-30 * var(--unit));                    /* يتوسط مع حركة الدائرة */
+        right: var(--text-shift);                        /* إزاحة جانبية */
+        transform-origin: right center;                  /* التصغير من اليمين */
+        font-size: clamp(15px, 1.7vw, 24px);             /* خط يتناسب مع العرض */
+        line-height: 1.5;                                /* ارتفاع السطر */
+        text-wrap: pretty;                               /* أسطر أنظف */
+    }
+
+    .hero__actions {
+        top: calc(-30 * var(--unit));                    /* نفس إزاحة الوصف */
+        right: var(--text-shift);                        /* نفس الإزاحة الجانبية */
+        justify-content: flex-start;                     /* الأزرار تبدأ من اليمين */
+        transform-origin: right center;                  /* التصغير من اليمين */
+    }
+}
+
+/* ---------- من 1025px فأكبر (لابتوب) ---------- */
+@media (min-width: 1025px) {
+    :root {
+        --section-gap: 130px;                            /* ≥1025px: مسافة أكبر بين الأقسام */
+    }
+}
+
+
+/* ==========================================================================
+   14) إيقاف التأثيرات (بيتفعل بإضافة .no-effects على <html> من زر إيقاف التأثيرات)
+   - بيوقف السكرول الناعم وكل الحركات والأرقام النازلة
+   - الخلفية بتفضل تدرج الثيم (فاتح/داكن) + شبكة المكعبات الثابتة، والضغط على الزر تاني بيرجّع كل حاجة
+   ========================================================================== */
+
+/* موضع زر التأثيرات في صفحة التواصل: فوق الفوتر الثابت */
+.floating-toolbar--contact {
+    bottom: 180px;                                       /* موبايل: فوق الفوتر (٣ أعمدة في صفين) */
+}
+
+@media (min-width: 701px), (max-height: 520px) {
+    .floating-toolbar--contact {
+        bottom: 140px;                                   /* الفوتر أقصر: صف واحد */
+    }
+}
+
+/* ---------- لا حركة ولا انتقالات ولا سكرول ناعم ---------- */
+html.no-effects,
+html.no-effects *,
+html.no-effects *::before,
+html.no-effects *::after {
+    animation: none !important;                          /* بدون أي أنيميشن */
+    scroll-behavior: auto !important;                    /* بدون سكرول ناعم */
+}
+
+/* بدون انتقالات، ما عدا هوفر أزرار الهيدر والفوتر (بيفضل شغال) */
+html.no-effects,
+html.no-effects :not(.site-header__button):not(.site-header__button *):not(.social-bar__button):not(.social-bar__button *),
+html.no-effects :not(.site-header__button):not(.social-bar__button)::before,
+html.no-effects :not(.site-header__button):not(.social-bar__button)::after {
+    transition: none !important;
+}
+
+/* حركة الأيقونات حول الشخصية بتفضل شغالة */
+html.no-effects .tech-icon__floating {
+    animation: tech-float var(--float-duration) ease-in-out infinite alternate !important;
+}
+
+/* ---------- الخلفية ----------
+   بنسيب تدرج الثيم الفاتح والداكن زي ما هو (نفس تدرجات البورتفوليو بالظبط: html::before / html::after
+   وقواعد .theme-dark اللي فوق)، وشبكة المكعبات بتفضل ثابتة. بنخفي بس الأرقام النازلة ومقتطفات الكود. */
+html.no-effects::before,
+html.no-effects::after {
+    transition: none !important;                         /* تبديل الثيم فوري بدون انتقال */
+}
+
+html.no-effects .tech-bg__digits,
+html.no-effects .tech-bg__snippet {
+    display: none !important;                            /* بدون الأرقام النازلة ولا مقتطفات الكود */
+}
+
+/* ---------- لا تدرجات لونية في باقي العناصر ---------- */
+html.no-effects {
+    --gradient-button: linear-gradient(#3aa8ff, #3aa8ff); /* أزرار اشترك الآن أزرق فاتح بلون واحد */
+}
+
+html.no-effects .hero__portrait::before {
+    display: none;                                       /* إخفاء الهالة الإشعاعية المتدرجة */
+}
+
+/* ---------- الهيرو ثابت في مكانه النهائي (بدون تأثير السكرول) ---------- */
+html.no-effects .hero {
+    --subtitle-progress: 0 !important;
+    --title-progress: 0 !important;
+    --portrait-progress: 0 !important;
+    --icons-retract: 0 !important;
+    --icons-fade: 0 !important;
+    position: static;                                    /* يتحرك مع الصفحة بدل ما يثبت */
+}
+
+html.no-effects .hero.is-gone {
+    visibility: visible;                                 /* ما يختفيش */
+}
+
+html.no-effects .hero__portrait,
+html.no-effects .hero__photo,
+html.no-effects .hero__title,
+html.no-effects .hero__subtitle,
+html.no-effects .tech-icon {
+    opacity: 1;                                          /* ظاهرة */
+}
+
+html.no-effects .hero__glow {
+    opacity: var(--glow-opacity, 1);                     /* الشفافية النهائية للتوهج */
+}
+
+html.no-effects .glass-button {
+    opacity: 1;                                          /* ظاهرة */
+}
+
+html.no-effects .hero__portrait {
+    transform: translateY(calc(-30 * var(--unit)));      /* مكانها النهائي */
+}
+
+html.no-effects .tech-icon {
+    transform: translate(calc(var(--to-x) * var(--unit)), calc(var(--to-y) * var(--unit))); /* مكانها حوالين الشخص */
+}
+
+/* ---------- كل العناصر المتحركة تظهر مباشرة ---------- */
+html.no-effects .social-bar__button,
+html.no-effects .floating-toolbar,
+html.no-effects .floating-toolbar__button,
+html.no-effects .project-card,
+html.no-effects .section__button,
+html.no-effects .site-header,
+html.no-effects .site-header__button,
+html.no-effects .site-footer,
+html.no-effects .glass {
+    opacity: 1 !important;                               /* ظاهرة دايمًا */
+}
+
+
+/* ==========================================================================
+   15) سهم "انزل لتحت" في أول الصفحة (الرئيسية فقط)
+   ========================================================================== */
+.scroll-hint {
+    position: fixed;                                     /* ثابت أسفل الشاشة */
+    bottom: 18px;                                        /* مسافة من آخر الشاشة */
+    left: 50%;                                           /* منتصف أفقي */
+    z-index: 4;                                          /* تحت الهيدر والأزرار */
+    translate: -50% 0;                                   /* توسيط تام */
+    pointer-events: none;                                /* ما يمنعش الضغط */
+    opacity: .75;                                        /* أبيض شفاف */
+    transition: opacity .4s ease;                        /* اختفاء ناعم */
+    animation: fade-in .8s calc(2.6s + var(--intro-delay)) backwards; /* يظهر بعد دخول الهيرو */
+}
+
+.scroll-hint.is-hidden {
+    opacity: 0;                                          /* يختفي لما المستخدم ينزل */
+}
+
+/* ٣ أسهم فوق بعض قريبة من بعض (كل سهم مثلث بضلعين) */
+.scroll-hint__chevrons {
+    display: flex;                                       /* فوق بعض */
+    flex-direction: column;                              /* عمودي */
+    align-items: center;                                 /* توسيط */
+    animation: scroll-hint-bounce 1.6s ease-in-out infinite; /* نزول وطلوع للمجموعة */
+}
+
+.scroll-hint__chevron {
+    display: block;                                      /* عنصر عادي */
+    width: 14px;                                         /* حجم صغير */
+    height: 14px;                                        /* حجم صغير */
+    margin-top: -7px;                                    /* قريبة من بعض */
+    border-right: 2px solid #fff;                        /* ضلع أبيض */
+    border-bottom: 2px solid #fff;                       /* ضلع أبيض */
+    border-radius: 1px;                                  /* طرف ناعم */
+    rotate: 45deg;                                       /* شكل السهم لتحت */
+    animation: scroll-hint-wave 1.6s ease-in-out infinite; /* لمعان متتابع */
+}
+
+.scroll-hint__chevron:first-child {
+    margin-top: 0;                                       /* أول سهم بدون إزاحة */
+}
+
+.scroll-hint__chevron:nth-child(2) { animation-delay: .2s; }
+.scroll-hint__chevron:nth-child(3) { animation-delay: .4s; }
+
+@keyframes scroll-hint-bounce {
+    0%, 100% { translate: 0 -5px; }                      /* فوق */
+    50%      { translate: 0 5px; }                       /* تحت */
+}
+
+@keyframes scroll-hint-wave {
+    0%, 100% { opacity: .25; }                           /* باهت */
+    50%      { opacity: 1; }                             /* واضح */
+}
+
+/* السهم بيفضل متحرك حتى لو التأثيرات مطفية */
+html.no-effects .scroll-hint__chevrons {
+    animation: scroll-hint-bounce 1.6s ease-in-out infinite !important;
+}
+
+html.no-effects .scroll-hint__chevron {
+    animation: scroll-hint-wave 1.6s ease-in-out infinite !important;
+}
+
+html.no-effects .scroll-hint__chevron:nth-child(2) { animation-delay: .2s !important; }
+html.no-effects .scroll-hint__chevron:nth-child(3) { animation-delay: .4s !important; }
+
+.credit-copy {
+    text-align: center;
+}
+
+
+/* ========================================================================== 
+   16) صفحة تسجيل الدخول وإنشاء الحساب
+   ========================================================================== */
+.auth-page {
+    height: 100vh;
+    height: 100svh;
+    overflow: hidden;
+}
+
+.auth-page .site-header,
+.auth-page .site-footer,
+.auth-page .floating-toolbar {
+    z-index: 100;                                        /* فوق طبقة الكارد الثابتة عشان الأزرار تتضغط */
+}
+
+.auth-main {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    display: grid;
+    place-items: center;
+    padding: 82px 16px 150px;
+}
+
+.auth-card {
+    width: min(100%, 470px);
+    max-height: calc(100svh - 250px);
+    padding: clamp(18px, 3vw, 30px);
+    background: rgba(8, 14, 56, .34);
+    border: 1px solid rgba(255, 255, 255, .32);
+    border-radius: 30px;
+    backdrop-filter: blur(24px) saturate(140%);
+    -webkit-backdrop-filter: blur(24px) saturate(140%);
+    box-shadow: 0 22px 70px rgba(0, 0, 0, .30), inset 0 1px rgba(255,255,255,.14);
+    overflow: auto;
+    scrollbar-width: none;
+}
+.auth-card::-webkit-scrollbar { display: none; }
+
+.auth-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 18px;
+    text-align: right;
+}
+.auth-brand__icon {
+    width: 46px;
+    height: 46px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(255,255,255,.38);
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(0, 119, 255, .48), rgba(130, 48, 255, .42));
+    box-shadow: 0 10px 28px rgba(0, 102, 255, .24);
+}
+.auth-brand h1 { margin: 0; font-family: var(--font-brand); font-size: 1.15rem; }
+.auth-brand p { margin: 3px 0 0; color: rgba(255,255,255,.68); font-size: .78rem; }
+
+.auth-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+    padding: 5px;
+    margin-bottom: 18px;
+    background: rgba(255,255,255,.075);
+    border: 1px solid rgba(255,255,255,.18);
+    border-radius: 17px;
+}
+.auth-tab {
+    border: 0;
+    border-radius: 12px;
+    padding: 11px 8px;
+    color: rgba(255,255,255,.7);
+    background: transparent;
+    cursor: pointer;
+    transition: .25s ease;
+}
+.auth-tab.is-active { color: #fff; background: rgba(255,255,255,.16); box-shadow: 0 6px 18px rgba(0,0,0,.16); }
+
+.auth-form { display: none; animation: auth-fade .35s var(--ease-out); }
+.auth-form.is-active { display: block; }
+.auth-heading { text-align: center; margin-bottom: 16px; }
+.auth-heading h2 { margin: 0 0 6px; font-size: 1.28rem; }
+.auth-heading p { margin: 0; color: rgba(255,255,255,.66); font-size: .84rem; }
+
+.auth-field { display: block; margin-bottom: 12px; }
+.auth-field > span { display: block; margin-bottom: 6px; font-size: .82rem; color: rgba(255,255,255,.84); }
+.auth-field > div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 48px;
+    padding: 0 14px;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.18);
+    border-radius: 15px;
+    transition: border-color .2s ease, background .2s ease, box-shadow .2s ease;
+}
+.auth-field > div:focus-within { border-color: rgba(105, 185, 255, .9); background: rgba(255,255,255,.12); box-shadow: 0 0 0 3px rgba(0, 132, 255, .12); }
+.auth-field i { color: #8ecaff; }
+.auth-field input { width: 100%; border: 0; outline: 0; color: #fff; background: transparent; font: inherit; direction: rtl; }
+.auth-field input::placeholder { color: rgba(255,255,255,.42); }
+
+.auth-submit {
+    width: 100%;
+    min-height: 49px;
+    border: 1px solid rgba(255,255,255,.26);
+    border-radius: 15px;
+    color: #fff;
+    font: inherit;
+    cursor: pointer;
+    background: linear-gradient(135deg, #087dff, #6342ff);
+    box-shadow: 0 12px 30px rgba(0, 81, 255, .25);
+}
+.auth-switch { margin: 14px 0 0; text-align: center; font-size: .82rem; color: rgba(255,255,255,.68); }
+.auth-switch button { padding: 0; border: 0; color: #8ecaff; background: transparent; font: inherit; cursor: pointer; }
+.auth-note { margin: 16px 0 0; text-align: center; color: rgba(255,255,255,.52); font-size: .68rem; line-height: 1.7; }
+.auth-note i { margin-left: 5px; }
+
+@keyframes auth-fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (max-height: 760px) {
+    .auth-main { padding-top: 78px; padding-bottom: 112px; }
+    .auth-card { max-height: calc(100svh - 195px); padding: 16px 20px; border-radius: 24px; }
+    .auth-brand { margin-bottom: 10px; }
+    .auth-brand__icon { width: 38px; height: 38px; border-radius: 13px; }
+    .auth-tabs { margin-bottom: 11px; }
+    .auth-heading { margin-bottom: 10px; }
+    .auth-field { margin-bottom: 8px; }
+    .auth-field > div { min-height: 43px; }
+    .auth-note { margin-top: 9px; }
+    .auth-page .site-footer { padding-block: 6px; gap: 5px; margin-bottom: 7px; }
+    .auth-page .site-footer__title { font-size: .9rem; }
+    .auth-page .credit-copy { font-size: .67rem; }
+    .auth-page .social-bar { padding: 4px; }
+    .auth-page .social-bar__button { padding-block: 4px; }
+}
+
+@media (max-width: 520px) {
+    .auth-main { padding-inline: 9px; }
+    .auth-card { width: min(100%, 430px); border-radius: 24px; }
+    .auth-page .site-header { width: calc(100% - 12px); }
+    .auth-page .site-footer { width: calc(100% - 12px); }
+}
+
+/* الأزرار العائمة في صفحة الدخول: فوق الفوتر مباشرة (--auth-footer-h بيحسبها سكريبت الصفحة) */
+.auth-page .floating-toolbar {
+    bottom: calc(var(--auth-footer-h, 150px) + 8px);
+}
+
+/* موبايل: الكارد بيسيب مكان للأزرار فوق الفوتر عشان ما يتغطاش */
+@media (max-width: 700px) {
+    .auth-main {
+        padding-bottom: calc(var(--auth-footer-h, 150px) + 66px);
+    }
+    .auth-card {
+        max-height: calc(100svh - 82px - var(--auth-footer-h, 150px) - 66px);
+    }
+}
